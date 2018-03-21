@@ -111,7 +111,7 @@
       <version>6.0.36</version>
     </dependency>
 
-    <!--validator-->
+    <!--validator参数验证-->
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
