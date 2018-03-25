@@ -1,5 +1,6 @@
 package com.mmall.service;
 
+import com.mmall.common.JsonData;
 import com.mmall.param.DeptParam;
 
 /**
@@ -11,7 +12,7 @@ public interface ISysDeptService {
      * 新增部门
      * @param deptParam
      */
-    void save(DeptParam deptParam);
+    JsonData save(DeptParam deptParam);
 
     /**
      * 更新部门

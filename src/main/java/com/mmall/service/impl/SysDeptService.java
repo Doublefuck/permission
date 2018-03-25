@@ -1,7 +1,9 @@
 package com.mmall.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.mmall.common.JsonData;
 import com.mmall.common.RequestHolder;
+import com.mmall.common.SpringExceptionResolver;
 import com.mmall.dao.SysDeptMapper;
 import com.mmall.exception.ParamException;
 import com.mmall.module.SysDept;
@@ -34,8 +36,11 @@ public class SysDeptService implements ISysDeptService {
      * @param deptParam
      */
     @Override
-    public void save(DeptParam deptParam) {
+    public JsonData save(DeptParam deptParam) {
         BeanValidator.check(deptParam); // 参数校验
+        if (!checkParentDept(deptParam.getParentId())) {
+            return JsonData.fail("新部门指定的上级部门不存在");
+        }
         if (checkExist(deptParam.getParentId(), deptParam.getName(), deptParam.getId())) {
             throw new ParamException("同一层级下存在相同名称的部门");
         }
@@ -52,6 +57,7 @@ public class SysDeptService implements ISysDeptService {
 
         // 更新到数据库
         sysDeptMapper.insertSelective(sysDept);
+        return JsonData.success(sysDept);
     }
 
     /**
@@ -114,6 +120,16 @@ public class SysDeptService implements ISysDeptService {
     // 校验相同层级下是否存在相同名称的部门
     private boolean checkExist(Integer parentId, String deptName, Integer deptId) {
         return sysDeptMapper.countByNameAndParentId(parentId,deptName, deptId) > 0;
+    }
+
+    // 校验父层级部门是否存在
+    private boolean checkParentDept(Integer parentId) {
+        SysDept sysDept = sysDeptMapper.selectByPrimaryKey(parentId);
+        if (sysDept == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // 获取当前部门的层级

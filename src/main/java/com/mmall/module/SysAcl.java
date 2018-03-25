@@ -1,10 +1,12 @@
 package com.mmall.module;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
 @Builder
+@EqualsAndHashCode(of = {"id"}) // 以id进行判断两个对象是否相同
 public class SysAcl {
     private Integer id;
 

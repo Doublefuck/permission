@@ -1,1 +1,1 @@
-select * from sys_role;
+select * from sys_dept;

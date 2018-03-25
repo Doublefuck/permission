@@ -23,4 +23,11 @@ public interface ISysTreeService {
      */
     List<SysAclModuleLevelDto> aclModuleTree();
 
+    /**
+     * 获取角色权限树数据
+     * @param roleId
+     * @return
+     */
+    List<SysAclModuleLevelDto> roleTree(Integer roleId);
+
 }
