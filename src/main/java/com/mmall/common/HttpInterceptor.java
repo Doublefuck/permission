@@ -34,11 +34,14 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
         Map parameters = request.getParameterMap(); // 请求参数
         long start = (Long) request.getAttribute(START_TIME);
         long end= System.currentTimeMillis();
-        log.info("requesy finished,url:{}, params:{}, total time:{}", url, JsonMapper.obj2String(parameters), end - start);
+        log.info("request finished,url:{}, params:{}, total time:{}", url, JsonMapper.obj2String(parameters), end - start);
+        RequestHolder.remove(); // 请求完成移除ThreadLocal
+        log.info("remove ThreadLocal");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        super.afterCompletion(request, response, handler, ex);
+        RequestHolder.remove(); // 请求结束移除ThreadLocal
+        log.info("after remove ThreadLocal");
     }
 }

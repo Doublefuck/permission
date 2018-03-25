@@ -13,4 +13,10 @@ public interface ISysDeptService {
      */
     void save(DeptParam deptParam);
 
+    /**
+     * 更新部门
+     * @param deptParam
+     */
+    void update(DeptParam deptParam);
+
 }

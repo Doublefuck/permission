@@ -3,6 +3,8 @@ package com.mmall.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mmall.exception.ParamException;
+import org.apache.commons.collections.MapUtils;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -15,6 +17,7 @@ import java.util.*;
  * 例如，传入的参数是SysDept对象，对该对象中的成员变量进行参数校验，需要在成员变量上添加特定的注解
  * @NotNull参数不为空，@NotBlank()参数不为空，@Max()参数最大值等等
  * 依赖于javax.validation和org.hibernate引入
+ * 每一个方法的返回值都是Map<String, String>，代表问题字段和问题信息
  * Created by Administrator on 2018/3/21 0021.
  */
 public class BeanValidator {
@@ -89,5 +92,18 @@ public class BeanValidator {
         }
     }
 
+    /**
+     * 参数校验过程出现异常
+     * 直接将参数的错误信息封装在ParamException中返回给前台
+     * @param param
+     * @throws ParamException
+     */
+    public static void check(Object param) throws ParamException {
+        Map<String, String> map = BeanValidator.validateObject(param);
+        // map不为空且长度大于0，说明有参数异常信息
+        if (MapUtils.isNotEmpty(map)) {
+            throw new ParamException(map.toString());
+        }
+    }
 
 }

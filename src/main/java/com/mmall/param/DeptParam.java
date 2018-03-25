@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
+ * 需要校验的部门参数，添加指定的注解
+ * 在BeanValidator中对参数进行校验，并返回错误的字段和自定义的错误信息
  * Created by Administrator on 2018/3/17 0017.
  */
 @Setter
@@ -22,7 +24,7 @@ public class DeptParam {
 
     private Integer parentId;
 
-    @NotNull(message = "展示顺序不可以为空")
+    @NotNull(message = "同级部门的展示顺序不可以为空")
     private Integer seq;
 
     @Length(max = 150, message = "备注长度不能超过150个字")

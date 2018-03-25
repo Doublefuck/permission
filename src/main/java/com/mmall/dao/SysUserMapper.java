@@ -1,6 +1,7 @@
 package com.mmall.dao;
 
 import com.mmall.module.SysUser;
+import org.apache.ibatis.annotations.Param;
 
 public interface SysUserMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +15,12 @@ public interface SysUserMapper {
     int updateByPrimaryKeySelective(SysUser record);
 
     int updateByPrimaryKey(SysUser record);
+
+    SysUser findByUsernameAndPassword(@Param("username") String username,@Param("password") String password);
+
+    SysUser findByKeyword(@Param("keyword") String keyword);
+
+    int countByEmail(@Param("email") String email, @Param("userId") Integer userId);
+
+    int countByTelephone(@Param("telephone") String telephone, @Param("userId") Integer userId);
 }

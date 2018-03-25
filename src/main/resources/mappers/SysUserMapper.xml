@@ -163,4 +163,38 @@
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="findByUsernameAndPassword" parameterType="map" resultType="com.mmall.module.SysUser">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    where username = #{username}
+    and password = #{password}
+  </select>
+  
+  <select id="findByKeyword" parameterType="string" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    where telephone = #{keyword}
+    or email = #{keyword}
+  </select>
+
+  <select id="countByEmail" parameterType="map" resultType="int">
+    select count(1)
+    from sys_use
+    where email = #{email}
+    <if test="userId != null">
+      and id != #{userId}
+    </if>
+  </select>
+
+  <select id="countByTelephone" parameterType="map" resultType="int">
+    select count(1)
+    from sys_use
+    where telephone = #{telephone}
+    <if test="userId != null">
+      and id != #{userId}
+    </if>
+  </select>
 </mapper>

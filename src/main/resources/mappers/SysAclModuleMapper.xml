@@ -151,4 +151,37 @@
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="countByNameAndParentId" parameterType="map" resultType="int">
+    select count(1) from sys_acl_module
+    where name = #{name}
+    <if test="parentId != null">
+      and parent_id = #{parentId}
+    </if>
+    <if test="sysAclModuleId != null">
+      and id = #{sysAclModuleId}
+    </if>
+
+  </select>
+
+  <select id="getChildSysAclModuleListByLevel" parameterType="string" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_acl_module
+    where LEVEL like #{level} || '.%'
+  </select>
+
+  <update id="batchUpdateLevel" parameterType="list">
+    <foreach collection="sysAclModuleList" item="sysAclModule" separator=";">
+      update sys_acl_module
+      set LEVEL = #{sysAclModule.level}
+      where id = #{sysAclModule.id}
+    </foreach>
+  </update>
+
+  <select id="getAllAclModule" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    from sys_acl_module
+  </select>
 </mapper>

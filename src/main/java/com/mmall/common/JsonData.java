@@ -1,5 +1,6 @@
 package com.mmall.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,6 +37,10 @@ public class JsonData<T> {
         return jsonData;
     }
 
+    public static JsonData success() {
+        return new JsonData(true);
+    }
+
     public static JsonData fail(String msg) {
         JsonData jsonData = new JsonData(false);
         jsonData.msg = msg;
@@ -48,5 +53,10 @@ public class JsonData<T> {
         result.put("msg", msg);
         result.put("data", data);
         return result;
+    }
+
+    @JsonIgnore
+    public boolean isSuccess() {
+        return this.ret = true;
     }
 }
