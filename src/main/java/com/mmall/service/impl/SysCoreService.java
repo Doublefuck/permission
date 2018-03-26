@@ -1,17 +1,20 @@
 package com.mmall.service.impl;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mmall.common.RequestHolder;
 import com.mmall.dao.SysAclMapper;
 import com.mmall.dao.SysRoleAclMapper;
 import com.mmall.dao.SysRoleUserMapper;
 import com.mmall.module.SysAcl;
+import com.mmall.module.SysUser;
 import com.mmall.service.ISysCoreService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 用户权限、角色权限关系管理
@@ -55,6 +58,8 @@ public class SysCoreService implements ISysCoreService {
         return sysAclList;
     }
 
+
+
     /**
      * 获取某个角色的已分配权限点
      * @param roleId
@@ -73,11 +78,75 @@ public class SysCoreService implements ISysCoreService {
     }
 
     /**
+     * 获取某个用户的权限点
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<SysAcl> getUserAclList(int userId) {
+        if (isSuperAdmin()) {
+            return sysAclMapper.getAll();
+        }
+        List<Integer> userRoleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(userRoleIdList)) {
+            return Lists.newArrayList();
+        }
+        List<Integer> userAclIdList = sysRoleAclMapper.getAclIdByRoleIdList(userRoleIdList);
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(userAclIdList)) {
+            return Lists.newArrayList();
+        }
+        return sysAclMapper.getByIdList(userAclIdList);
+    }
+
+    /**
      * 判断用户是否是超级管理员
+     * TODO 此处是自己随便定义的超级管理员规则，实际需要根据项目需求变化，
+     * 可以是配置文件获取，也可以指定某个用户或者某个角色
      * @return
      */
     public boolean isSuperAdmin() {
+        SysUser sysUser = RequestHolder.getCurrentUser();
+        if (sysUser.getEmail().contains("admin")) {
+            return true;
+        }
         return true;
+    }
 
+    /**
+     *
+     * @param url
+     * @return
+     */
+    public boolean hasUrlAcl(String url) {
+        if (isSuperAdmin()) {
+            return true;
+        }
+        // 获取url对应的所有权限点
+        List<SysAcl> aclList = sysAclMapper.getByUrl(url);
+        if (CollectionUtils.isEmpty(aclList)) {
+            return true;
+        }
+        List<SysAcl> userAclIdList = getCurrentUserAclList();
+        Set<Integer> userAclIdSet = Sets.newHashSet();
+        for (SysAcl sysAcl : userAclIdList) {
+            Integer userAclId = sysAcl.getId();
+            userAclIdSet.add(userAclId);
+        }
+        // 规则：只要有一个权限点
+        boolean hasValidAcl = false; // 权限点是否有效
+        for (SysAcl sysAcl : aclList) {
+            // 判断一个用户是否具有某个权限点的访问权限
+            if (sysAcl == null || sysAcl.getStatus() != 1) { // 权限点无效
+                continue;
+            }
+            hasValidAcl = true;
+            if (userAclIdSet.contains(sysAcl.getId())) {
+                return true;
+            }
+            if (!hasValidAcl) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -22,4 +22,13 @@ public interface ISysCoreService {
      * @return
      */
     List<SysAcl> getRoleAclList(int roleId);
+
+    /**
+     * 获取某个用户的权限点
+     * @param userId
+     * @return
+     */
+    List<SysAcl> getUserAclList(int userId);
+
+
 }

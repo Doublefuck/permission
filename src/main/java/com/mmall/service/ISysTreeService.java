@@ -30,4 +30,11 @@ public interface ISysTreeService {
      */
     List<SysAclModuleLevelDto> roleTree(Integer roleId);
 
+    /**
+     * 获取某一用户权限信息
+     * @param userId
+     * @return
+     */
+    List<SysAclModuleLevelDto> userAclTree(int userId);
+
 }

@@ -112,4 +112,19 @@
       #{roleId}
     </foreach>
   </select>
+
+  <delete id="deleteByRoleId" parameterType="int">
+    delete from sys_role_acl where role_id = #{roleId}
+  </delete>
+
+  <insert id="batchInsert" parameterType="list">
+    insert into sys_role_acl values
+      <foreach collection="roleAclList" item="roleAcl" open="(" close=")" separator=",">
+        #{roleAcl.roleId}, #{roleAcl.aclId},#{roleAcl.operator}, #{roleAcl.operatorTime}, #{roleAcl.operatorIp}
+      </foreach>
+  </insert>
+
+  <select id="getRoleIdListByAclId" parameterType="int" resultType="int">
+    SELECT role_id FROM sys_role_acl WHERE acl_id = #{aclId}
+  </select>
 </mapper>

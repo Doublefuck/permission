@@ -1,7 +1,12 @@
 package com.mmall.module;
 
+import lombok.Builder;
+import lombok.ToString;
+
 import java.util.Date;
 
+@Builder
+@ToString
 public class SysRoleUser {
     private Integer id;
 

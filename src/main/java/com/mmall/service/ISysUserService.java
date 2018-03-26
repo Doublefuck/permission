@@ -5,6 +5,8 @@ import com.mmall.module.SysUser;
 import com.mmall.param.UserParam;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 后台用户管理
  * Created by Administrator on 2018/3/22 0022.
@@ -24,7 +26,7 @@ public interface ISysUserService {
      */
     void update(UserParam userParam);
 
-    /**
+    /**2
      * 用户登录校验
      * @param username
      * @param password
@@ -38,4 +40,10 @@ public interface ISysUserService {
      * @return
      */
     SysUser findByKeyword(String keyword);
+
+    /**
+     * 获取所有用户信息列表
+     * @return
+     */
+    List<SysUser> getAll();
 }

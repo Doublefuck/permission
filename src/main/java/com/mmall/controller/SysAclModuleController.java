@@ -43,7 +43,11 @@ public class SysAclModuleController {
         return JsonData.fail("新增权限模块失败");
     }
 
-
+    /**
+     * 更新权限模块
+     * @param aclModuleParam
+     * @return
+     */
     @RequestMapping("update.json")
     @ResponseBody
     public JsonData updateAclModule(AclModuleParam aclModuleParam) {
@@ -63,6 +67,17 @@ public class SysAclModuleController {
     public JsonData tree() {
         List<SysAclModuleLevelDto> sysAclModuleLevelDtoList = iSysTreeService.aclModuleTree();
         return JsonData.success(sysAclModuleLevelDtoList);
+    }
+
+    /**
+     * 删除权限模块
+     * @param aclModuleId
+     * @return
+     */
+    @RequestMapping("delete.json")
+    @ResponseBody
+    public JsonData delete(int aclModuleId) {
+        return iSysAclModuleService.delete(aclModuleId);
     }
 
 }

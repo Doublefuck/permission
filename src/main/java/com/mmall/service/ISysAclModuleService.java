@@ -19,4 +19,6 @@ public interface ISysAclModuleService {
      * @param aclModuleParam
      */
     JsonData update(AclModuleParam aclModuleParam);
+
+    JsonData delete(int aclModuleId);
 }

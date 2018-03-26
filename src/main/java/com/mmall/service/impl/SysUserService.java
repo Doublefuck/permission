@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 前台+后台用户管理
@@ -110,6 +111,17 @@ public class SysUserService implements ISysUserService {
     public SysUser findByKeyword(String keyword) {
         return sysUserMapper.findByKeyword(keyword);
     }
+
+    /**
+     * 获取所有用户信息列表
+     * @return
+     */
+    @Override
+    public List<SysUser> getAll() {
+        List<SysUser> sysUserList = sysUserMapper.getAll();
+        return sysUserList;
+    }
+
 
     /**
      * 校验用户邮箱是否存在

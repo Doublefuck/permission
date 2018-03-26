@@ -5,6 +5,7 @@ import com.mmall.common.JsonData;
 import com.mmall.common.RequestHolder;
 import com.mmall.common.SpringExceptionResolver;
 import com.mmall.dao.SysDeptMapper;
+import com.mmall.dao.SysUserMapper;
 import com.mmall.exception.ParamException;
 import com.mmall.module.SysDept;
 import com.mmall.param.DeptParam;
@@ -30,6 +31,28 @@ public class SysDeptService implements ISysDeptService {
 
     @Resource
     private SysDeptMapper sysDeptMapper;
+
+    @Resource
+    private SysUserMapper sysUserMapper;
+
+    /**
+     * 删除部门
+     * @param deptId
+     * @return
+     */
+    @Override
+    public JsonData delete(int deptId) {
+        SysDept sysDept = sysDeptMapper.selectByPrimaryKey(deptId);
+        Preconditions.checkNotNull(sysDept, "待删除的部门不存在");
+        if (sysDeptMapper.countByParentId(deptId) > 0) {
+            throw new ParamException("当前部门下存在子部门，无法删除");
+        }
+        if (sysUserMapper.countByDeptId(deptId) > 0) {
+            throw new ParamException("当前部门下存在用户，无法删除");
+        }
+        sysDeptMapper.deleteByPrimaryKey(deptId);
+        return JsonData.success("删除部门成功");
+    }
 
     /**
      * 新增部门

@@ -197,4 +197,24 @@
       and id != #{userId}
     </if>
   </select>
+
+  <select id="getByUserIdList" parameterType="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_role_user
+    where id IN 
+      <foreach collection="userIds" item="id" open="(" close=")" separator=",">
+        #{id}
+      </foreach>
+  </select>
+
+  <select id="getAll" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM sys_user
+  </select>
+
+  <select id="countByDeptId" parameterType="int" resultType="int">
+    select count(1) from sys_user where dept_id = #{deptId}
+  </select>
 </mapper>

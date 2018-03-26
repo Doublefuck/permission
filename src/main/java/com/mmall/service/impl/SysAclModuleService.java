@@ -3,6 +3,7 @@ package com.mmall.service.impl;
 import com.google.common.base.Preconditions;
 import com.mmall.common.JsonData;
 import com.mmall.common.RequestHolder;
+import com.mmall.dao.SysAclMapper;
 import com.mmall.dao.SysAclModuleMapper;
 import com.mmall.exception.ParamException;
 import com.mmall.module.SysAclModule;
@@ -28,6 +29,29 @@ public class SysAclModuleService implements ISysAclModuleService {
     @Resource
     private SysAclModuleMapper sysAclModuleMapper;
 
+    @Resource
+    private SysAclMapper sysAclMapper;
+
+    /**
+     * 删除权限模块
+     * @param aclModuleId
+     * @return
+     */
+    @Override
+    public JsonData delete(int aclModuleId) {
+        SysAclModule sysAclModule = sysAclModuleMapper.selectByPrimaryKey(aclModuleId);
+        if (sysAclModule == null) {
+            throw new ParamException("待删除的权限模块不存在");
+        }
+        if (sysAclModuleMapper.countByParentId(aclModuleId) > 0) {
+            throw new ParamException("当前权限模块下存在子模块，无法删除");
+        }
+        if (sysAclMapper.countByAclModuleId(aclModuleId) > 0) {
+            throw new ParamException("当前权限模块下存在权限点，无法删除");
+        }
+        sysAclModuleMapper.deleteByPrimaryKey(aclModuleId);
+        return null;
+    }
 
     /**
      * 新增权限模块

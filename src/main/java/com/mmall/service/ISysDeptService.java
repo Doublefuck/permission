@@ -20,4 +20,11 @@ public interface ISysDeptService {
      */
     void update(DeptParam deptParam);
 
+    /**
+     * 删除部门
+     * @param deptId
+     * @return
+     */
+    JsonData delete(int deptId);
+
 }
