@@ -10,6 +10,7 @@ import com.mmall.exception.ParamException;
 import com.mmall.module.SysDept;
 import com.mmall.param.DeptParam;
 import com.mmall.service.ISysDeptService;
+import com.mmall.service.ISysLogService;
 import com.mmall.util.BeanValidator;
 import com.mmall.util.IpUtil;
 import com.mmall.util.LevelUtil;
@@ -34,6 +35,9 @@ public class SysDeptService implements ISysDeptService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private ISysLogService iSysLogService;
 
     /**
      * 删除部门
@@ -80,6 +84,7 @@ public class SysDeptService implements ISysDeptService {
 
         // 更新到数据库
         sysDeptMapper.insertSelective(sysDept);
+        iSysLogService.saveDeptLog(null, sysDept);
         return JsonData.success(sysDept);
     }
 
@@ -105,6 +110,7 @@ public class SysDeptService implements ISysDeptService {
         after.setOperatorTime(new Date()); // TODO
 
         updateWihChild(before, after);
+        iSysLogService.saveDeptLog(before, after);
     }
 
     /**

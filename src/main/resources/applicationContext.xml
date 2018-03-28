@@ -8,8 +8,28 @@
         <property name="locations">
             <list>
                 <value>classpath:settings.properties</value>
+                <!--redis配置文件-->
+                <value>classpath:redis.properties</value>
             </list>
         </property>
+    </bean>
+
+    <!--redis配置-->
+    <!--<import resource="redis.xml" />-->
+    <!--redis连接池-->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig" />
+
+    <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool" scope="singleton">
+        <constructor-arg index="0" ref="jedisPoolConfig" />
+        <constructor-arg index="1">
+            <list>
+                <bean class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg name="host" value="${redis.host}" />
+                    <constructor-arg name="port" value="${redis.port}" />
+                    <constructor-arg name="timeout" value="${redis.timeout}" />
+                </bean>
+            </list>
+        </constructor-arg>
     </bean>
 
     <!--连接数据库配置-->

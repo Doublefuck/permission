@@ -166,4 +166,40 @@
       status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="countBySearchDto" parameterType="com.mmall.dto.SearchLogDto" resultType="int">
+    select count(1) from sys_log <include refid="queryConditions" />
+  </select>
+
+  <select id="getLogListBySearchDto" parameterType="com.mmall.dto.SearchLogDto" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />, <include refid="Blob_Column_List" />
+    from sys_log
+    <include refid="queryConditions" />
+    order by
+    operate_time
+  </select>
+  
+  <sql id="queryConditions">
+    <where>
+      <if test="searchLogDto.type != null">
+        and type = #{searchLogDto.type}
+      </if>
+      <if test="searchLogDto.beforeSeq != null and searchLogDto.beforeSeq != ''">
+        and old_value like #{searchLogDto.beforeSeq}
+      </if>
+      <if test="searchLogDto.afterSeq != null and searchLogDto.afterSeq != ''">
+        and new_value like #{searchLogDto.afterSeq}
+      </if>
+      <if test="searchLogDto.operator != null and searchLogDto.operator != ''">
+        and operator like #{searchLogDto.operator}
+      </if>
+      <if test="searchLogDto.fromTime != null">
+        and operate_time >= #{searchLogDto.fromTime}
+      </if>
+      <if test="searchLogDto.toTime != null">
+        and operate_time &lt; #{searchLogDto.toTime}
+      </if>
+    </where>
+  </sql>
 </mapper>

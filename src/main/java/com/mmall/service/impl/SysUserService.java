@@ -7,6 +7,7 @@ import com.mmall.dao.SysUserMapper;
 import com.mmall.exception.ParamException;
 import com.mmall.module.SysUser;
 import com.mmall.param.UserParam;
+import com.mmall.service.ISysLogService;
 import com.mmall.service.ISysUserService;
 import com.mmall.util.BeanValidator;
 import com.mmall.util.IpUtil;
@@ -28,6 +29,9 @@ public class SysUserService implements ISysUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private ISysLogService iSysLogService;
 
     /**
      * 登录校验
@@ -75,6 +79,7 @@ public class SysUserService implements ISysUserService {
         // TODO 发送email，通知用户密码信息
 
         sysUserMapper.updateByPrimaryKeySelective(sysUser);
+        iSysLogService.saveUserLog(null, sysUser);
     }
 
     /**
@@ -100,6 +105,7 @@ public class SysUserService implements ISysUserService {
         after.setOperatorTime(new Date()); // TODO
 
         sysUserMapper.updateByPrimaryKeySelective(after);
+        iSysLogService.saveUserLog(before, after);
     }
 
     /**

@@ -2,14 +2,19 @@ package com.mmall.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mmall.bean.LogType;
 import com.mmall.common.JsonData;
 import com.mmall.common.RequestHolder;
+import com.mmall.dao.SysLogMapper;
 import com.mmall.dao.SysRoleUserMapper;
 import com.mmall.dao.SysUserMapper;
+import com.mmall.module.SysLogWithBLOBs;
 import com.mmall.module.SysRoleUser;
 import com.mmall.module.SysUser;
+import com.mmall.service.ISysLogService;
 import com.mmall.service.ISysRoleUserService;
 import com.mmall.util.IpUtil;
+import com.mmall.util.JsonMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,12 @@ public class SysRoleUserService implements ISysRoleUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+//    @Resource
+//    private ISysLogService iSysLogService;
+
+    @Resource
+    private SysLogMapper sysLogMapper;
 
     /**
      * 根据roleId获取所有对应的用户
@@ -68,6 +79,7 @@ public class SysRoleUserService implements ISysRoleUserService {
             }
         }
         updateRoleUsers(roleId, userIds);
+        saveRoleUserLog(roleId, originUserIdList, userIds);
         return JsonData.success("更新当前角色下用户信息成功");
     }
 
@@ -91,5 +103,19 @@ public class SysRoleUserService implements ISysRoleUserService {
             sysRoleUserList.add(sysRoleUser);
         }
         sysRoleUserMapper.batchInsert(sysRoleUserList);
+    }
+
+    private void saveRoleUserLog(int roleId, List<Integer> before, List<Integer> after) {
+        SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
+        sysLogWithBLOBs.setType(LogType.TYPE_ROLE_USER);
+        sysLogWithBLOBs.setTargetId(roleId);
+        sysLogWithBLOBs.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
+        sysLogWithBLOBs.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
+        sysLogWithBLOBs.setStatus(1);
+        sysLogWithBLOBs.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysLogWithBLOBs.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLogWithBLOBs.setOperatorTime(new Date());
+
+        sysLogMapper.insertSelective(sysLogWithBLOBs);
     }
 }

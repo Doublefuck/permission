@@ -9,6 +9,7 @@ import com.mmall.exception.ParamException;
 import com.mmall.module.SysAclModule;
 import com.mmall.param.AclModuleParam;
 import com.mmall.service.ISysAclModuleService;
+import com.mmall.service.ISysLogService;
 import com.mmall.util.BeanValidator;
 import com.mmall.util.IpUtil;
 import com.mmall.util.LevelUtil;
@@ -31,6 +32,9 @@ public class SysAclModuleService implements ISysAclModuleService {
 
     @Resource
     private SysAclMapper sysAclMapper;
+
+    @Resource
+    private ISysLogService iSysLogService;
 
     /**
      * 删除权限模块
@@ -70,6 +74,7 @@ public class SysAclModuleService implements ISysAclModuleService {
         sysAclModule.setOperatorTime(new Date());
 
         sysAclModuleMapper.insertSelective(sysAclModule);
+        iSysLogService.saveAclModuleLog(null, sysAclModule);
         return JsonData.success(sysAclModule);
     }
 
@@ -95,6 +100,7 @@ public class SysAclModuleService implements ISysAclModuleService {
         after.setOperatorTime(new Date());
 
         updateWithChild(before, after);
+        iSysLogService.saveAclModuleLog(before, after);
         return JsonData.success(after);
     }
 

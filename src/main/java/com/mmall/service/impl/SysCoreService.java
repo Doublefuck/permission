@@ -2,6 +2,7 @@ package com.mmall.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mmall.bean.CacheKeyConstants;
 import com.mmall.common.RequestHolder;
 import com.mmall.dao.SysAclMapper;
 import com.mmall.dao.SysRoleAclMapper;
@@ -9,8 +10,11 @@ import com.mmall.dao.SysRoleUserMapper;
 import com.mmall.module.SysAcl;
 import com.mmall.module.SysUser;
 import com.mmall.service.ISysCoreService;
+import com.mmall.util.JsonMapper;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.type.TypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -31,6 +35,9 @@ public class SysCoreService implements ISysCoreService {
 
     @Resource
     private SysRoleAclMapper sysRoleAclMapper;
+
+    @Resource
+    private SysCacheService sysCacheService;
 
     /**
      * 获取当前用户的权限点
@@ -126,6 +133,8 @@ public class SysCoreService implements ISysCoreService {
         if (CollectionUtils.isEmpty(aclList)) {
             return true;
         }
+        // 从缓存中获取用户权限点列表
+        // List<SysAcl> userAclIdList = getCurrentUserAclListFromCache();
         List<SysAcl> userAclIdList = getCurrentUserAclList();
         Set<Integer> userAclIdSet = Sets.newHashSet();
         for (SysAcl sysAcl : userAclIdList) {
@@ -148,5 +157,20 @@ public class SysCoreService implements ISysCoreService {
             }
         }
         return false;
+    }
+
+
+    public List<SysAcl> getCurrentUserAclListFromCache() {
+        int userId = RequestHolder.getCurrentUser().getId();
+        String cacheValue = sysCacheService.getFromCache(CacheKeyConstants.USER_ACLS, String.valueOf(userId));
+        if (StringUtils.isBlank(cacheValue)) {
+            List<SysAcl> aclList = getCurrentUserAclList();
+            if (CollectionUtils.isNotEmpty(aclList)) {
+                sysCacheService.saveCache(JsonMapper.obj2String(aclList), 600, CacheKeyConstants.USER_ACLS);
+            }
+            return aclList;
+        }
+        return JsonMapper.string2Obj(cacheValue, new TypeReference<List<SysAcl>>() {
+        });
     }
 }

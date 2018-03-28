@@ -49,6 +49,7 @@
             <mvc:mapping path="/sys/aclModule/*" />
             <mvc:mapping path="/sys/acl/*" />
             <mvc:mapping path="/sys/role/*" />
+            <mvc:mapping path="/sys/log/*" />
             <mvc:exclude-mapping path="/user/login.json" />
             <bean class="com.mmall.interceptor.LoginInterceptor" />
         </mvc:interceptor>

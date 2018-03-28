@@ -2,12 +2,17 @@ package com.mmall.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mmall.bean.LogType;
 import com.mmall.common.JsonData;
 import com.mmall.common.RequestHolder;
+import com.mmall.dao.SysLogMapper;
 import com.mmall.dao.SysRoleAclMapper;
+import com.mmall.module.SysLogWithBLOBs;
 import com.mmall.module.SysRoleAcl;
+import com.mmall.service.ISysLogService;
 import com.mmall.service.ISysRoleAclService;
 import com.mmall.util.IpUtil;
+import com.mmall.util.JsonMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +33,12 @@ public class SysRoleAclService implements ISysRoleAclService {
     @Resource
     private SysRoleAclMapper sysRoleAclMapper;
 
+//    @Resource
+//    private ISysLogService iSysLogService;
+
+    @Resource
+    private SysLogMapper sysLogMapper;
+
     /**
      * 根据角色id更新该角色的权限点
      * @param roleId
@@ -47,6 +58,7 @@ public class SysRoleAclService implements ISysRoleAclService {
             }
         }
         updateRoleAcl(roleId, aclIdList);
+        saveRoleAclLog(roleId, originAclIdList, aclIdList);
         return JsonData.success("更新成功");
     }
 
@@ -71,5 +83,19 @@ public class SysRoleAclService implements ISysRoleAclService {
         }
         // 批量增加
         sysRoleAclMapper.batchInsert(sysRoleAclList);
+    }
+
+    public void saveRoleAclLog(int roleId, List<Integer> before, List<Integer> after) {
+        SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
+        sysLogWithBLOBs.setType(LogType.TYPE_ROLE_ACL);
+        sysLogWithBLOBs.setTargetId(roleId);
+        sysLogWithBLOBs.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
+        sysLogWithBLOBs.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
+        sysLogWithBLOBs.setStatus(1);
+        sysLogWithBLOBs.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysLogWithBLOBs.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLogWithBLOBs.setOperatorTime(new Date());
+
+        sysLogMapper.insertSelective(sysLogWithBLOBs);
     }
 }

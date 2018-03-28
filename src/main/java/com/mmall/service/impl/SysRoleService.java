@@ -9,6 +9,7 @@ import com.mmall.exception.ParamException;
 import com.mmall.module.SysRole;
 import com.mmall.module.SysUser;
 import com.mmall.param.RoleParam;
+import com.mmall.service.ISysLogService;
 import com.mmall.service.ISysRoleService;
 import com.mmall.util.BeanValidator;
 import com.mmall.util.IpUtil;
@@ -37,6 +38,9 @@ public class SysRoleService implements ISysRoleService {
     @Resource
     private SysUserMapper sysUserMapper;
 
+    @Resource
+    private ISysLogService iSysLogService;
+
 
     /**
      * 新增角色
@@ -56,6 +60,7 @@ public class SysRoleService implements ISysRoleService {
         sysRole.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysRole.setOperatorTime(new Date());
         sysRoleMapper.insertSelective(sysRole);
+        iSysLogService.saveRoleLog(null, sysRole);
         return JsonData.success(sysRole);
     }
 
@@ -79,6 +84,7 @@ public class SysRoleService implements ISysRoleService {
         after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperatorTime(new Date());
         sysRoleMapper.updateByPrimaryKeySelective(after);
+        iSysLogService.saveRoleLog(before, after);
         return null;
     }
 

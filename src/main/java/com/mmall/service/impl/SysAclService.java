@@ -9,6 +9,7 @@ import com.mmall.exception.PermissionException;
 import com.mmall.module.SysAcl;
 import com.mmall.param.AclParam;
 import com.mmall.service.ISysAclService;
+import com.mmall.service.ISysLogService;
 import com.mmall.util.BeanValidator;
 import com.mmall.util.IpUtil;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class SysAclService implements ISysAclService {
 
     @Resource
     private SysAclMapper sysAclMapper;
+
+    @Resource
+    private ISysLogService iSysLogService;
 
     /**
      * 新增权限点
@@ -46,6 +50,7 @@ public class SysAclService implements ISysAclService {
         sysAcl.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
 
         sysAclMapper.insertSelective(sysAcl);
+        iSysLogService.saveAcllog(null, sysAcl);
         return JsonData.success(sysAcl);
     }
 
@@ -73,6 +78,7 @@ public class SysAclService implements ISysAclService {
         after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
 
         sysAclMapper.updateByPrimaryKeySelective(after);
+        iSysLogService.saveAcllog(before, after);
         return JsonData.success(after);
     }
 
