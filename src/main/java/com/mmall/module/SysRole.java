@@ -1,12 +1,14 @@
 package com.mmall.module;
 
 import lombok.Builder;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Builder
+@ToString
 public class SysRole {
-    private Integer id;
+    private Integer roleId;
 
     private String name;
 
@@ -22,8 +24,8 @@ public class SysRole {
 
     private String operatorIp;
 
-    public SysRole(Integer id, String name, Integer type, Integer status, String remark, String operator, Date operatorTime, String operatorIp) {
-        this.id = id;
+    public SysRole(Integer roleId, String name, Integer type, Integer status, String remark, String operator, Date operatorTime, String operatorIp) {
+        this.roleId = roleId;
         this.name = name;
         this.type = type;
         this.status = status;
@@ -37,12 +39,12 @@ public class SysRole {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getRoleId() {
+        return roleId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
     }
 
     public String getName() {

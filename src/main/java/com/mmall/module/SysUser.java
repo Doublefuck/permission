@@ -1,14 +1,12 @@
 package com.mmall.module;
 
 import lombok.Builder;
-import lombok.ToString;
 
 import java.util.Date;
 
 @Builder
-@ToString
 public class SysUser {
-    private Integer id;
+    private Integer userId;
 
     private String username;
 
@@ -30,8 +28,8 @@ public class SysUser {
 
     private String operatorIp;
 
-    public SysUser(Integer id, String username, String telephone, String email, String password, Integer deptId, Integer status, String remark, String operator, Date operatorTime, String operatorIp) {
-        this.id = id;
+    public SysUser(Integer userId, String username, String telephone, String email, String password, Integer deptId, Integer status, String remark, String operator, Date operatorTime, String operatorIp) {
+        this.userId = userId;
         this.username = username;
         this.telephone = telephone;
         this.email = email;
@@ -48,12 +46,12 @@ public class SysUser {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {

@@ -5,6 +5,7 @@ import com.mmall.bean.CacheKeyConstants;
 import com.mmall.service.RedisPool;
 import com.mmall.service.ISysCacheService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import javax.annotation.Resource;
  * Created by Administrator on 2018/3/26 0026.
  */
 @Slf4j
+@Service
 public class SysCacheService implements ISysCacheService {
 
     @Resource

@@ -45,7 +45,7 @@ public class SysCoreService implements ISysCoreService {
      */
     @Override
     public List<SysAcl> getCurrentUserAclList() {
-        int userId = RequestHolder.getCurrentUser().getId();
+        int userId = RequestHolder.getCurrentUser().getUserId();
         // 如果用户是超级管理员，则返回所有的权限点
         if (isSuperAdmin()) {
             return sysAclMapper.getAll();
@@ -55,13 +55,13 @@ public class SysCoreService implements ISysCoreService {
         if (CollectionUtils.isEmpty(userRoleIdList)) {
             return Lists.newArrayList();
         }
-        // 当前用户的角色列表对应的权限id列表
+        // 当前用户的角色id列表对应的权限id列表
         List<Integer> userRoleAclIdList = sysRoleAclMapper.getAclIdByRoleIdList(userRoleIdList);
         if (CollectionUtils.isEmpty(userRoleAclIdList)) {
             return Lists.newArrayList();
         }
         // 根据用户所有的权限id获取对应的权限点集合
-        List<SysAcl> sysAclList = sysAclMapper.getByIdList(userRoleAclIdList);
+        List<SysAcl> sysAclList = sysAclMapper.getAclByAclIdList(userRoleAclIdList);
         return sysAclList;
     }
 
@@ -80,7 +80,7 @@ public class SysCoreService implements ISysCoreService {
             return Lists.newArrayList();
         }
         // 根据权限点id获取对应的权限点对象集合
-        List<SysAcl> sysAclList = sysAclMapper.getByIdList(roleAclIdList);
+        List<SysAcl> sysAclList = sysAclMapper.getAclByAclIdList(roleAclIdList);
         return sysAclList;
     }
 
@@ -102,7 +102,7 @@ public class SysCoreService implements ISysCoreService {
         if (org.apache.commons.collections.CollectionUtils.isEmpty(userAclIdList)) {
             return Lists.newArrayList();
         }
-        return sysAclMapper.getByIdList(userAclIdList);
+        return sysAclMapper.getAclByAclIdList(userAclIdList);
     }
 
     /**
@@ -138,7 +138,7 @@ public class SysCoreService implements ISysCoreService {
         List<SysAcl> userAclIdList = getCurrentUserAclList();
         Set<Integer> userAclIdSet = Sets.newHashSet();
         for (SysAcl sysAcl : userAclIdList) {
-            Integer userAclId = sysAcl.getId();
+            Integer userAclId = sysAcl.getAclId();
             userAclIdSet.add(userAclId);
         }
         // 规则：只要有一个权限点
@@ -149,7 +149,7 @@ public class SysCoreService implements ISysCoreService {
                 continue;
             }
             hasValidAcl = true;
-            if (userAclIdSet.contains(sysAcl.getId())) {
+            if (userAclIdSet.contains(sysAcl.getAclId())) {
                 return true;
             }
             if (!hasValidAcl) {
@@ -161,7 +161,7 @@ public class SysCoreService implements ISysCoreService {
 
 
     public List<SysAcl> getCurrentUserAclListFromCache() {
-        int userId = RequestHolder.getCurrentUser().getId();
+        int userId = RequestHolder.getCurrentUser().getUserId();
         String cacheValue = sysCacheService.getFromCache(CacheKeyConstants.USER_ACLS, String.valueOf(userId));
         if (StringUtils.isBlank(cacheValue)) {
             List<SysAcl> aclList = getCurrentUserAclList();

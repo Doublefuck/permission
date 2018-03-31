@@ -30,11 +30,6 @@ public class SysDeptController {
     @Resource
     private ISysTreeService iSysTreeService;
 
-    @RequestMapping("/page.json")
-    public ModelAndView page() {
-        return new ModelAndView("dept");
-    }
-
     /**
      * 新增部门
      * @param deptParam
@@ -43,8 +38,18 @@ public class SysDeptController {
     @RequestMapping("/save.json")
     @ResponseBody
     public JsonData saveDept(DeptParam deptParam) {
-        iSysDeptService.save(deptParam);
-        return JsonData.success();
+        return iSysDeptService.save(deptParam);
+    }
+
+    /**
+     * 获取某一部门详情
+     * @param deptId
+     * @return
+     */
+    @RequestMapping("/detail.json")
+    @ResponseBody
+    public JsonData detail(Integer deptId) {
+        return iSysDeptService.detail(deptId);
     }
 
     /**
@@ -67,8 +72,7 @@ public class SysDeptController {
     @RequestMapping("/update.json")
     @ResponseBody
     public JsonData updateDept(DeptParam deptParam) {
-        iSysDeptService.update(deptParam);
-        return JsonData.success();
+        return iSysDeptService.update(deptParam);
     }
 
     /**

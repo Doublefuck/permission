@@ -3,9 +3,9 @@
 <mapper namespace="com.mmall.dao.SysAclMapper" >
   <resultMap id="BaseResultMap" type="com.mmall.module.SysAcl" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <idArg column="acl_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="code" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="acl_module_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="url" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="type" jdbcType="INTEGER" javaType="java.lang.Integer" />
@@ -18,26 +18,26 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, code, NAME, acl_module_id, url, type, status, seq, remark, operator, operator_time, 
+    acl_id, code, name, acl_module_id, url, type, status, seq, remark, operator, operator_time, 
     operator_ip
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from sys_acl
-    where id = #{id,jdbcType=INTEGER}
+    where acl_id = #{aclId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_acl
-    where id = #{id,jdbcType=INTEGER}
+    where acl_id = #{aclId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mmall.module.SysAcl" >
-    insert into sys_acl (id, code, NAME, 
+    insert into sys_acl (acl_id, code, name, 
       acl_module_id, url, type, 
       status, seq, remark, 
       operator, operator_time, operator_ip
       )
-    values (#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+    values (#{aclId,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{aclModuleId,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{seq,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
       #{operator,jdbcType=VARCHAR}, #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR}
@@ -46,14 +46,14 @@
   <insert id="insertSelective" parameterType="com.mmall.module.SysAcl" >
     insert into sys_acl
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="aclId != null" >
+        acl_id,
       </if>
       <if test="code != null" >
         code,
       </if>
       <if test="name != null" >
-        NAME,
+        name,
       </if>
       <if test="aclModuleId != null" >
         acl_module_id,
@@ -84,8 +84,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="aclId != null" >
+        #{aclId,jdbcType=INTEGER},
       </if>
       <if test="code != null" >
         #{code,jdbcType=VARCHAR},
@@ -129,7 +129,7 @@
         code = #{code,jdbcType=VARCHAR},
       </if>
       <if test="name != null" >
-        NAME = #{name,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="aclModuleId != null" >
         acl_module_id = #{aclModuleId,jdbcType=INTEGER},
@@ -159,12 +159,12 @@
         operator_ip = #{operatorIp,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where acl_id = #{aclId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.module.SysAcl" >
     update sys_acl
     set code = #{code,jdbcType=VARCHAR},
-      NAME = #{name,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
       acl_module_id = #{aclModuleId,jdbcType=INTEGER},
       url = #{url,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
@@ -174,47 +174,53 @@
       operator = #{operator,jdbcType=VARCHAR},
       operator_time = #{operatorTime,jdbcType=TIMESTAMP},
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where acl_id = #{aclId,jdbcType=INTEGER}
   </update>
 
-  <select id="countByAclModuleId" parameterType="int" resultType="int">
-    select count(1) from sys_acl where acl_module_id = #{aclModuleId}
+  <select id="getAll" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM sys_acl
   </select>
 
-  <select id="getByAclModuleId" parameterType="int" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sys_acl
-    where acl_module_id = #{aclModuleId}
-    order by seq asc, name asc
+  <select id="countByAclModuleId" parameterType="int" resultType="int">
+    SELECT count(1) FROM sys_acl WHERE acl_module_id = #{aclModuleId}
   </select>
 
   <select id="countByNameAndAclModuleId" parameterType="map" resultType="int">
-    select count(1) from sys_acl where acl_module_id = #{aclModuleId} and name = #{name}
-    <if test="id != null">
-      and id != #{id}
+    SELECT count(1) FROM sys_acl
+    WHERE acl_module_id = #{aclModuleId}
+    AND name = #{aclName}
+    <if test="acl_id != null">
+      AND acl_id != #{aclId}
     </if>
   </select>
 
-  <select id="getAll" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sys_acl
+  <select id="countAcl" resultType="int">
+    SELECT count(1) FROM sys_acl
   </select>
-  <select id="getByIdList" parameterType="list" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sys_acl
-    where id in
-      <foreach collection="idList" item="id" open="(" close=")" separator=",">
-        #{id}
-      </foreach>
 
+  <select id="getByAclModuleId" parameterType="integer" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM sys_acl
+    WHERE acl_module_id = #{aclModuleId}
+  </select>
+
+  <select id="getAclByAclIdList" parameterType="list" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM sys_acl
+    WHERE acl_id IN
+    <foreach collection="aclIdList" item="aclId" index="index" open="(" close=")" separator=",">
+      #{aclId}
+    </foreach>
   </select>
 
   <select id="getByUrl" parameterType="string" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
-    FROM sys_acl WHERE url = #{url} <!-- todo 使用正则匹配 -->
+    FROM sys_acl
+    WHERE url = #{url}
   </select>
 </mapper>

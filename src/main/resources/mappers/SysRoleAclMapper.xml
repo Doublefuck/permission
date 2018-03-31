@@ -3,7 +3,7 @@
 <mapper namespace="com.mmall.dao.SysRoleAclMapper" >
   <resultMap id="BaseResultMap" type="com.mmall.module.SysRoleAcl" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <idArg column="role_acl_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="role_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="acl_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="operator" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -12,31 +12,31 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, role_id, acl_id, operator, operator_time, operator_ip
+    role_acl_id, role_id, acl_id, operator, operator_time, operator_ip
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from sys_role_acl
-    where id = #{id,jdbcType=INTEGER}
+    where role_acl_id = #{roleAclId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_role_acl
-    where id = #{id,jdbcType=INTEGER}
+    where role_acl_id = #{roleAclId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mmall.module.SysRoleAcl" >
-    insert into sys_role_acl (id, role_id, acl_id, 
+    insert into sys_role_acl (role_acl_id, role_id, acl_id, 
       operator, operator_time, operator_ip
       )
-    values (#{id,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER}, #{aclId,jdbcType=INTEGER}, 
+    values (#{roleAclId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER}, #{aclId,jdbcType=INTEGER}, 
       #{operator,jdbcType=VARCHAR}, #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.mmall.module.SysRoleAcl" >
     insert into sys_role_acl
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="roleAclId != null" >
+        role_acl_id,
       </if>
       <if test="roleId != null" >
         role_id,
@@ -55,8 +55,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="roleAclId != null" >
+        #{roleAclId,jdbcType=INTEGER},
       </if>
       <if test="roleId != null" >
         #{roleId,jdbcType=INTEGER},
@@ -94,7 +94,7 @@
         operator_ip = #{operatorIp,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where role_acl_id = #{roleAclId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.module.SysRoleAcl" >
     update sys_role_acl
@@ -103,28 +103,34 @@
       operator = #{operator,jdbcType=VARCHAR},
       operator_time = #{operatorTime,jdbcType=TIMESTAMP},
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where role_acl_id = #{roleAclId,jdbcType=INTEGER}
   </update>
 
-  <select id="getAclIdByRoleIdList" parameterType="list" resultType="int">
-    SELECT acl_id FROM sys_role_acl WHERE role_id in
-    <foreach collection="roleIdList" item="roleId" open="(" close=")" separator=",">
+  <select id="getRoleIdListByAclId" parameterType="int" resultType="integer">
+    SELECT role_id
+    FROM sys_role_acl
+    WHERE acl_id = #{aclId}
+  </select>
+
+  <select id="getAclIdByRoleIdList" parameterType="list" resultType="integer">
+    SELECT acl_id
+    FROM sys_role_acl
+    WHERE role_id IN
+    <foreach collection="roleIdList" item="roleId" index="index" open="(" close=")" separator=",">
       #{roleId}
     </foreach>
   </select>
 
-  <delete id="deleteByRoleId" parameterType="int">
-    delete from sys_role_acl where role_id = #{roleId}
+  <delete id="deleteAclByRoleId" parameterType="integer">
+    DELETE FROM sys_role_acl
+    WHERE role_id = #{roleId}
   </delete>
 
   <insert id="batchInsert" parameterType="list">
-    insert into sys_role_acl values
-      <foreach collection="roleAclList" item="roleAcl" open="(" close=")" separator=",">
-        #{roleAcl.roleId}, #{roleAcl.aclId},#{roleAcl.operator}, #{roleAcl.operatorTime}, #{roleAcl.operatorIp}
+    INSERT INTO sys_role_acl (role_id, acl_id, operator, operate_time, operate_ip)
+    VALUES
+      <foreach collection="sysRoleAclList" item="roleAcl" separator=",">
+        (#{roleAcl.roleId}, #{roleAcl.aclId}, #{roleAcl.operator}, #{roleAcl.operateTime}, #{roleAcl.operateIp})
       </foreach>
   </insert>
-
-  <select id="getRoleIdListByAclId" parameterType="int" resultType="int">
-    SELECT role_id FROM sys_role_acl WHERE acl_id = #{aclId}
-  </select>
 </mapper>

@@ -9,7 +9,6 @@ import com.mmall.dao.SysLogMapper;
 import com.mmall.dao.SysRoleAclMapper;
 import com.mmall.module.SysLogWithBLOBs;
 import com.mmall.module.SysRoleAcl;
-import com.mmall.service.ISysLogService;
 import com.mmall.service.ISysRoleAclService;
 import com.mmall.util.IpUtil;
 import com.mmall.util.JsonMapper;
@@ -70,7 +69,7 @@ public class SysRoleAclService implements ISysRoleAclService {
     @Transactional
     public void updateRoleAcl(Integer roleId, @RequestParam(value = "aclIdList", required = false, defaultValue = "") List<Integer> aclIdList) {
         // 移除原来的角色权限点
-        sysRoleAclMapper.deleteByRoleId(roleId);
+        sysRoleAclMapper.deleteAclByRoleId(roleId);
         if (CollectionUtils.isEmpty(aclIdList)) {
             return;
         }

@@ -3,12 +3,12 @@
 <mapper namespace="com.mmall.dao.SysAclModuleMapper" >
   <resultMap id="BaseResultMap" type="com.mmall.module.SysAclModule" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <idArg column="acl_module_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="parent_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="LEVEL" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="level" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="seq" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="status" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="remark" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="operator" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="operator_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
@@ -16,24 +16,25 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, NAME, parent_id, LEVEL, seq, STATUS, remark, operator, operator_time, operator_ip
+    acl_module_id, name, parent_id, level, seq, status, remark, operator, operator_time, 
+    operator_ip
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from sys_acl_module
-    where id = #{id,jdbcType=INTEGER}
+    where acl_module_id = #{aclModuleId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_acl_module
-    where id = #{id,jdbcType=INTEGER}
+    where acl_module_id = #{aclModuleId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mmall.module.SysAclModule" >
-    insert into sys_acl_module (id, NAME, parent_id, 
-      LEVEL, seq, STATUS, 
+    insert into sys_acl_module (acl_module_id, name, parent_id, 
+      level, seq, status, 
       remark, operator, operator_time, 
       operator_ip)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
+    values (#{aclModuleId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
       #{level,jdbcType=VARCHAR}, #{seq,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
       #{remark,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{operatorTime,jdbcType=TIMESTAMP}, 
       #{operatorIp,jdbcType=VARCHAR})
@@ -41,23 +42,23 @@
   <insert id="insertSelective" parameterType="com.mmall.module.SysAclModule" >
     insert into sys_acl_module
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="aclModuleId != null" >
+        acl_module_id,
       </if>
       <if test="name != null" >
-        NAME,
+        name,
       </if>
       <if test="parentId != null" >
         parent_id,
       </if>
       <if test="level != null" >
-        LEVEL,
+        level,
       </if>
       <if test="seq != null" >
         seq,
       </if>
       <if test="status != null" >
-        STATUS,
+        status,
       </if>
       <if test="remark != null" >
         remark,
@@ -73,8 +74,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="aclModuleId != null" >
+        #{aclModuleId,jdbcType=INTEGER},
       </if>
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
@@ -109,19 +110,19 @@
     update sys_acl_module
     <set >
       <if test="name != null" >
-        NAME = #{name,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="parentId != null" >
         parent_id = #{parentId,jdbcType=INTEGER},
       </if>
       <if test="level != null" >
-        LEVEL = #{level,jdbcType=VARCHAR},
+        level = #{level,jdbcType=VARCHAR},
       </if>
       <if test="seq != null" >
         seq = #{seq,jdbcType=INTEGER},
       </if>
       <if test="status != null" >
-        STATUS = #{status,jdbcType=INTEGER},
+        status = #{status,jdbcType=INTEGER},
       </if>
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
@@ -136,56 +137,55 @@
         operator_ip = #{operatorIp,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where acl_module_id = #{aclModuleId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.module.SysAclModule" >
     update sys_acl_module
-    set NAME = #{name,jdbcType=VARCHAR},
+    set name = #{name,jdbcType=VARCHAR},
       parent_id = #{parentId,jdbcType=INTEGER},
-      LEVEL = #{level,jdbcType=VARCHAR},
+      level = #{level,jdbcType=VARCHAR},
       seq = #{seq,jdbcType=INTEGER},
-      STATUS = #{status,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
       remark = #{remark,jdbcType=VARCHAR},
       operator = #{operator,jdbcType=VARCHAR},
       operator_time = #{operatorTime,jdbcType=TIMESTAMP},
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where acl_module_id = #{aclModuleId,jdbcType=INTEGER}
   </update>
 
-  <select id="countByNameAndParentId" parameterType="map" resultType="int">
-    select count(1) from sys_acl_module
-    where name = #{name}
-    <if test="parentId != null">
-      and parent_id = #{parentId}
-    </if>
-    <if test="sysAclModuleId != null">
-      and id = #{sysAclModuleId}
-    </if>
-
+  <select id="countAclModule" resultType="int">
+    SELECT count(1) FROM sys_acl_module
   </select>
 
   <select id="getChildSysAclModuleListByLevel" parameterType="string" resultMap="BaseResultMap">
-    select
+    SELECT
     <include refid="Base_Column_List" />
-    from sys_acl_module
-    where LEVEL like #{level} || '.%'
+    FROM sys_acl_module
+    WHERE level like #{level} || '.%'
   </select>
 
   <update id="batchUpdateLevel" parameterType="list">
-    <foreach collection="sysAclModuleList" item="sysAclModule" separator=";">
-      update sys_acl_module
-      set LEVEL = #{sysAclModule.level}
-      where id = #{sysAclModule.id}
+    <foreach collection="sysAclModuleList" item ="sysAclModule" separator=";">
+      UPDATE sys_acl_module SET level = #{sysAclModule.level} WHERE acl_module_id = #{sysAclModule.aclModuleId}
     </foreach>
   </update>
 
   <select id="getAllAclModule" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
-    from sys_acl_module
+    FROM sys_acl_module
   </select>
 
-  <select id="countByParentId" parameterType="int" resultType="int">
-    SELECT count(1) from sys_acl_module where parent_id = #{aclModuleId}
+  <select id="countByParentId" parameterType="integer" resultType="int">
+    SELECT count(1) FROM sys_acl_module WHERE parent_id = #{parentId}
+  </select>
+
+  <select id="countByNameAndParentId" parameterType="map" resultType="int">
+    SELECT count(1) FROM sys_acl_module
+    WHERE parent_id = #{parentId}
+    AND name = #{sysAclModuleName}
+    <if test="sysAclModuleId != null">
+      and acl_module_id != #{sysAclModuleId}
+    </if>
   </select>
 </mapper>

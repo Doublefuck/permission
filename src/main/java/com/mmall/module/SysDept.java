@@ -1,16 +1,12 @@
 package com.mmall.module;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.Date;
 
 @Builder
-@ToString
 public class SysDept {
-    private Integer id;
+    private Integer deptId;
 
     private String name;
 
@@ -28,8 +24,8 @@ public class SysDept {
 
     private String operatorIp;
 
-    public SysDept(Integer id, String name, Integer parentId, String level, Integer seq, String remark, String operator, Date operatorTime, String operatorIp) {
-        this.id = id;
+    public SysDept(Integer deptId, String name, Integer parentId, String level, Integer seq, String remark, String operator, Date operatorTime, String operatorIp) {
+        this.deptId = deptId;
         this.name = name;
         this.parentId = parentId;
         this.level = level;
@@ -44,12 +40,12 @@ public class SysDept {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getDeptId() {
+        return deptId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setDeptId(Integer deptId) {
+        this.deptId = deptId;
     }
 
     public String getName() {

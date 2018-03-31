@@ -44,17 +44,17 @@ public class SysRoleService implements ISysRoleService {
 
     /**
      * 新增角色
-     *
      * @param roleParam
      * @return
      */
     @Override
     public JsonData save(RoleParam roleParam) {
         BeanValidator.check(roleParam);
-        if (checkExist(roleParam.getName(), roleParam.getId())) {
+        if (checkExist(roleParam.getName())) {
             throw new ParamException("角色名称已存在");
         }
-        SysRole sysRole = SysRole.builder().name(roleParam.getName()).status(roleParam.getStatus()).
+        int count = sysRoleMapper.countRole() + 1;
+        SysRole sysRole = SysRole.builder().roleId(count).name(roleParam.getName()).status(roleParam.getStatus()).
                 type(roleParam.getType()).remark(roleParam.getRemark()).build();
         sysRole.setOperator(RequestHolder.getCurrentUser().getUsername());
         sysRole.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
@@ -73,19 +73,19 @@ public class SysRoleService implements ISysRoleService {
     @Override
     public JsonData update(RoleParam roleParam) {
         BeanValidator.check(roleParam);
-        if (checkExist(roleParam.getName(), roleParam.getId())) {
+        if (checkExist(roleParam.getName())) {
             throw new ParamException("角色名称已存在");
         }
-        SysRole before = sysRoleMapper.selectByPrimaryKey(roleParam.getId());
+        SysRole before = sysRoleMapper.selectByPrimaryKey(roleParam.getRoleId());
         Preconditions.checkNotNull(before, "待更新的角色不存在");
-        SysRole after = SysRole.builder().id(roleParam.getId()).name(roleParam.getName()).status(roleParam.getStatus()).
+        SysRole after = SysRole.builder().roleId(roleParam.getRoleId()).name(roleParam.getName()).status(roleParam.getStatus()).
                 type(roleParam.getType()).remark(roleParam.getRemark()).build();
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
         after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperatorTime(new Date());
         sysRoleMapper.updateByPrimaryKeySelective(after);
         iSysLogService.saveRoleLog(before, after);
-        return null;
+        return JsonData.success();
     }
 
     /**
@@ -131,7 +131,7 @@ public class SysRoleService implements ISysRoleService {
         }
         List<Integer> roleIdList = Lists.newArrayList();
         for (SysRole sysRole : sysRoleList) {
-            Integer roleId = sysRole.getId();
+            Integer roleId = sysRole.getRoleId();
             roleIdList.add(roleId);
         }
         // 根据角色id列表获取用户id列表
@@ -154,12 +154,11 @@ public class SysRoleService implements ISysRoleService {
     }
 
     /**
-     * 检查是否存在相同的角色
+     * 检查是否存在相同的角色名
      * @param name
-     * @param id
      * @return
      */
-    private boolean checkExist(String name, Integer id) {
-        return sysRoleMapper.countByNameId(name, id) > 0;
+    private boolean checkExist(String name) {
+        return sysRoleMapper.countRoleByName(name) > 0;
     }
 }

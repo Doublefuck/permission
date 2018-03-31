@@ -1,14 +1,14 @@
 package com.mmall.module;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Builder
+@ToString
 public class SysAclModule {
-    private Integer id;
+    private Integer aclModuleId;
 
     private String name;
 
@@ -28,8 +28,8 @@ public class SysAclModule {
 
     private String operatorIp;
 
-    public SysAclModule(Integer id, String name, Integer parentId, String level, Integer seq, Integer status, String remark, String operator, Date operatorTime, String operatorIp) {
-        this.id = id;
+    public SysAclModule(Integer aclModuleId, String name, Integer parentId, String level, Integer seq, Integer status, String remark, String operator, Date operatorTime, String operatorIp) {
+        this.aclModuleId = aclModuleId;
         this.name = name;
         this.parentId = parentId;
         this.level = level;
@@ -45,12 +45,12 @@ public class SysAclModule {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getAclModuleId() {
+        return aclModuleId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setAclModuleId(Integer aclModuleId) {
+        this.aclModuleId = aclModuleId;
     }
 
     public String getName() {

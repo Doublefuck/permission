@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AclParam {
 
-    private Integer id;
+    private Integer aclId;
 
     @NotBlank(message = "权限点名称不可以为空")
     @Length(min = 2, max = 20, message = "权限点名称长度需要在2到20个字之间")

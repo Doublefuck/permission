@@ -20,5 +20,10 @@ public interface ISysAclModuleService {
      */
     JsonData update(AclModuleParam aclModuleParam);
 
+    /**
+     * 删除权限模块
+     * @param aclModuleId
+     * @return
+     */
     JsonData delete(int aclModuleId);
 }

@@ -1,14 +1,14 @@
 package com.mmall.module;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Builder
-@EqualsAndHashCode(of = {"id"}) // 以id进行判断两个对象是否相同
+@ToString
 public class SysAcl {
-    private Integer id;
+    private Integer aclId;
 
     private String code;
 
@@ -32,8 +32,8 @@ public class SysAcl {
 
     private String operatorIp;
 
-    public SysAcl(Integer id, String code, String name, Integer aclModuleId, String url, Integer type, Integer status, Integer seq, String remark, String operator, Date operatorTime, String operatorIp) {
-        this.id = id;
+    public SysAcl(Integer aclId, String code, String name, Integer aclModuleId, String url, Integer type, Integer status, Integer seq, String remark, String operator, Date operatorTime, String operatorIp) {
+        this.aclId = aclId;
         this.code = code;
         this.name = name;
         this.aclModuleId = aclModuleId;
@@ -51,12 +51,12 @@ public class SysAcl {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getAclId() {
+        return aclId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setAclId(Integer aclId) {
+        this.aclId = aclId;
     }
 
     public String getCode() {

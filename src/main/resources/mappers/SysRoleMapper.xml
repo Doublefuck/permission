@@ -3,10 +3,10 @@
 <mapper namespace="com.mmall.dao.SysRoleMapper" >
   <resultMap id="BaseResultMap" type="com.mmall.module.SysRole" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <idArg column="role_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="type" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="STATUS" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="status" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="remark" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="operator" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="operator_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
@@ -14,31 +14,31 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, type, STATUS, remark, operator, operator_time, operator_ip
+    role_id, name, type, status, remark, operator, operator_time, operator_ip
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from sys_role
-    where id = #{id,jdbcType=INTEGER}
+    where role_id = #{roleId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_role
-    where id = #{id,jdbcType=INTEGER}
+    where role_id = #{roleId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mmall.module.SysRole" >
-    insert into sys_role (id, name, type, 
-      STATUS, remark, operator, 
+    insert into sys_role (role_id, name, type, 
+      status, remark, operator, 
       operator_time, operator_ip)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+    values (#{roleId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, 
       #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.mmall.module.SysRole" >
     insert into sys_role
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="roleId != null" >
+        role_id,
       </if>
       <if test="name != null" >
         name,
@@ -47,7 +47,7 @@
         type,
       </if>
       <if test="status != null" >
-        STATUS,
+        status,
       </if>
       <if test="remark != null" >
         remark,
@@ -63,8 +63,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="roleId != null" >
+        #{roleId,jdbcType=INTEGER},
       </if>
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
@@ -99,7 +99,7 @@
         type = #{type,jdbcType=INTEGER},
       </if>
       <if test="status != null" >
-        STATUS = #{status,jdbcType=INTEGER},
+        status = #{status,jdbcType=INTEGER},
       </if>
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
@@ -114,41 +114,44 @@
         operator_ip = #{operatorIp,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where role_id = #{roleId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.module.SysRole" >
     update sys_role
     set name = #{name,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
-      STATUS = #{status,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
       remark = #{remark,jdbcType=VARCHAR},
       operator = #{operator,jdbcType=VARCHAR},
       operator_time = #{operatorTime,jdbcType=TIMESTAMP},
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where role_id = #{roleId,jdbcType=INTEGER}
   </update>
 
-  <select id="getAll" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sys_role
-  </select>
-
-  <select id="countByNameId" parameterType="map" resultType="int">
-    select count(1) form sys_role
-    where NAME = #{name}
-    <if test="id != null">
-      and id != #{id}
-    </if>
-  </select>
-  
   <select id="getByIdList" parameterType="list" resultMap="BaseResultMap">
-    SELECT 
+    SELECT
     <include refid="Base_Column_List" />
     FROM sys_role
-    where id IN 
-    <foreach collection="idList" item="id" open="(" close=")" separator=",">
-      #{id}
-    </foreach>
+    <where>
+      role_id IN
+      <foreach collection="roleIdList" item="roleId" open="(" close=")" separator=",">
+        #{roleId}
+      </foreach>
+    </where>
+  </select>
+
+  <select id="countRole" resultType="int">
+    SELECT count(1)
+    FROM sys_role
+  </select>
+
+  <select id="getAll" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM sys_role
+  </select>
+
+  <select id="countRoleByName" parameterType="string" resultType="int">
+    SELECT count(1) FROM sys_role WHERE name = #{name}
   </select>
 </mapper>

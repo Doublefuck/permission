@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +44,7 @@ public class SysUserController {
     public JsonData saveUser(HttpSession session, UserParam userParam) {
         SysUser sysUser = (SysUser) session.getAttribute("user");
         if (sysUser == null) {
-            return JsonData.fail("用户未登录，请先登录");
+            return JsonData.fail("用户未登录，请先登录xxx");
         }
         iSysUserService.save(userParam);
         return JsonData.success();
@@ -59,6 +60,17 @@ public class SysUserController {
     public JsonData updateUser(UserParam userParam) {
         iSysUserService.update(userParam);
         return JsonData.success();
+    }
+
+    /**
+     * 获取所有用户信息
+     * @return
+     */
+    @RequestMapping("/list.json")
+    @ResponseBody
+    public JsonData list() {
+        List<SysUser> sysUserList = iSysUserService.getAll();
+        return JsonData.success(sysUserList);
     }
 
     /**

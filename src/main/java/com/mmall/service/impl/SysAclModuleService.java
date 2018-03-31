@@ -64,10 +64,11 @@ public class SysAclModuleService implements ISysAclModuleService {
     @Override
     public JsonData save(AclModuleParam aclModuleParam) {
         BeanValidator.check(aclModuleParam);
-        if (checkExists(aclModuleParam.getParentId(), aclModuleParam.getName(), aclModuleParam.getId())) {
+        if (checkExists(aclModuleParam.getParentId(), aclModuleParam.getName(), aclModuleParam.getAclModuleId())) {
             throw new ParamException("同一层级下存在相同名称的权限模块");
         }
-        SysAclModule sysAclModule = SysAclModule.builder().name(aclModuleParam.getName()).parentId(aclModuleParam.getParentId()).
+        int count = sysAclModuleMapper.countAclModule() + 100;
+        SysAclModule sysAclModule = SysAclModule.builder().aclModuleId(count).name(aclModuleParam.getName()).parentId(aclModuleParam.getParentId()).
                 seq(aclModuleParam.getSeq()).status(aclModuleParam.getStatus()).remark(aclModuleParam.getRemark()).build();
         sysAclModule.setOperator(RequestHolder.getCurrentUser().getUsername());
         sysAclModule.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
@@ -85,14 +86,14 @@ public class SysAclModuleService implements ISysAclModuleService {
     @Override
     public JsonData update(AclModuleParam aclModuleParam) {
         BeanValidator.check(aclModuleParam);
-        if (checkExists(aclModuleParam.getParentId(), aclModuleParam.getName(), aclModuleParam.getId())) {
+        if (checkExists(aclModuleParam.getParentId(), aclModuleParam.getName(), aclModuleParam.getAclModuleId())) {
             throw new ParamException("同一层级下存在相同名称的权限模块");
         }
         // 更新前
-        SysAclModule before = sysAclModuleMapper.selectByPrimaryKey(aclModuleParam.getId());
+        SysAclModule before = sysAclModuleMapper.selectByPrimaryKey(aclModuleParam.getAclModuleId());
         Preconditions.checkNotNull(before, "待更新的权限模块不存在");
         // 构建新的权限模块
-        SysAclModule after = SysAclModule.builder().id(aclModuleParam.getId()).name(aclModuleParam.getName()).parentId(aclModuleParam.getParentId()).
+        SysAclModule after = SysAclModule.builder().aclModuleId(aclModuleParam.getAclModuleId()).name(aclModuleParam.getName()).parentId(aclModuleParam.getParentId()).
                 seq(aclModuleParam.getSeq()).status(aclModuleParam.getStatus()).remark(aclModuleParam.getRemark()).build();
         after.setLevel(LevelUtil.calculateLevel(getLevel(aclModuleParam.getParentId()), aclModuleParam.getParentId()));
         after.setOperator(RequestHolder.getCurrentUser().getUsername());

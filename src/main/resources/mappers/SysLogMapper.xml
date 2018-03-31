@@ -3,7 +3,7 @@
 <mapper namespace="com.mmall.dao.SysLogMapper" >
   <resultMap id="BaseResultMap" type="com.mmall.module.SysLog" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <idArg column="log_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="type" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="target_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="operator" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -14,7 +14,7 @@
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.mmall.module.SysLogWithBLOBs" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <idArg column="log_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="type" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="target_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="operator" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -26,7 +26,7 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, type, target_id, operator, operator_time, operator_ip, status
+    log_id, type, target_id, operator, operator_time, operator_ip, status
   </sql>
   <sql id="Blob_Column_List" >
     old_value, new_value
@@ -37,18 +37,18 @@
     ,
     <include refid="Blob_Column_List" />
     from sys_log
-    where id = #{id,jdbcType=INTEGER}
+    where log_id = #{logId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_log
-    where id = #{id,jdbcType=INTEGER}
+    where log_id = #{logId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mmall.module.SysLogWithBLOBs" >
-    insert into sys_log (id, type, target_id, 
+    insert into sys_log (log_id, type, target_id, 
       operator, operator_time, operator_ip, 
       status, old_value, new_value
       )
-    values (#{id,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{targetId,jdbcType=INTEGER}, 
+    values (#{logId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{targetId,jdbcType=INTEGER}, 
       #{operator,jdbcType=VARCHAR}, #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR}, 
       #{status,jdbcType=INTEGER}, #{oldValue,jdbcType=LONGVARCHAR}, #{newValue,jdbcType=LONGVARCHAR}
       )
@@ -56,8 +56,8 @@
   <insert id="insertSelective" parameterType="com.mmall.module.SysLogWithBLOBs" >
     insert into sys_log
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="logId != null" >
+        log_id,
       </if>
       <if test="type != null" >
         type,
@@ -85,8 +85,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="logId != null" >
+        #{logId,jdbcType=INTEGER},
       </if>
       <if test="type != null" >
         #{type,jdbcType=INTEGER},
@@ -142,7 +142,7 @@
         new_value = #{newValue,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where log_id = #{logId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.mmall.module.SysLogWithBLOBs" >
     update sys_log
@@ -154,7 +154,7 @@
       status = #{status,jdbcType=INTEGER},
       old_value = #{oldValue,jdbcType=LONGVARCHAR},
       new_value = #{newValue,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where log_id = #{logId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.module.SysLog" >
     update sys_log
@@ -164,41 +164,40 @@
       operator_time = #{operatorTime,jdbcType=TIMESTAMP},
       operator_ip = #{operatorIp,jdbcType=VARCHAR},
       status = #{status,jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
+    where log_id = #{logId,jdbcType=INTEGER}
   </update>
 
-  <select id="countBySearchDto" parameterType="com.mmall.dto.SearchLogDto" resultType="int">
-    select count(1) from sys_log <include refid="queryConditions" />
+  <select id="countBySearchDto" parameterType="map" resultType="int">
+    SELECT count(1) FROM sys_log
+    <include refid="queryConditions" />
   </select>
 
-  <select id="getLogListBySearchDto" parameterType="com.mmall.dto.SearchLogDto" resultMap="ResultMapWithBLOBs">
-    select
-    <include refid="Base_Column_List" />, <include refid="Blob_Column_List" />
-    from sys_log
+  <select id="getLogListBySearchDto" parameterType="map" resultMap="ResultMapWithBLOBs">
+    SELECT <include refid="Base_Column_List" />, <include refid="Blob_Column_List" />
+    FROM sys_log
     <include refid="queryConditions" />
-    order by
-    operate_time
+    ORDER BY operate_time DESC
   </select>
-  
+
   <sql id="queryConditions">
     <where>
-      <if test="searchLogDto.type != null">
-        and type = #{searchLogDto.type}
+      <if test="dto.type != null">
+        AND type = #{dto.type}
       </if>
-      <if test="searchLogDto.beforeSeq != null and searchLogDto.beforeSeq != ''">
-        and old_value like #{searchLogDto.beforeSeq}
+      <if test="dto.beforeSeg != null and dto.beforeSeg != ''">
+        AND old_value like #{dto.beforeSeg}
       </if>
-      <if test="searchLogDto.afterSeq != null and searchLogDto.afterSeq != ''">
-        and new_value like #{searchLogDto.afterSeq}
+      <if test="dto.afterSeg != null and dto.afterSeg != ''">
+        AND new_value like #{dto.afterSeg}
       </if>
-      <if test="searchLogDto.operator != null and searchLogDto.operator != ''">
-        and operator like #{searchLogDto.operator}
+      <if test="dto.operator != null and dto.operator != ''">
+        AND operator like #{dto.operator}
       </if>
-      <if test="searchLogDto.fromTime != null">
-        and operate_time >= #{searchLogDto.fromTime}
+      <if test="dto.fromTime != null">
+        AND operate_time &gt;= #{dto.fromTime}
       </if>
-      <if test="searchLogDto.toTime != null">
-        and operate_time &lt; #{searchLogDto.toTime}
+      <if test="dto.toTime != null">
+        AND operate_time &lt;= #{dto.toTime}
       </if>
     </where>
   </sql>

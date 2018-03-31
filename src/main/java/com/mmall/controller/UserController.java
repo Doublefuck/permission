@@ -1,6 +1,7 @@
 package com.mmall.controller;
 
 import com.mmall.common.JsonData;
+import com.mmall.module.SysRole;
 import com.mmall.module.SysUser;
 import com.mmall.service.ISysUserService;
 import com.mmall.util.MD5Util;
@@ -37,20 +38,21 @@ public class UserController {
     @RequestMapping("/login.json")
     @ResponseBody
     public JsonData login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String username = request.getParameter("username");
+        String loginname = request.getParameter("loginname");
         String password = request.getParameter("password");
 
-        SysUser sysUser = iSysUserSevice.findByKeyword(username);
+        JsonData jsonData = iSysUserSevice.findByKeyword(loginname);
+        SysUser sysUser = (SysUser) jsonData.getData();
         String errMsg = ""; // 错误提示信息
         String ret = request.getParameter("ret"); // 从别的页面跳转到登录页面携带的地址
 
-        if (StringUtils.isBlank(username)) {
-            errMsg = "用户名不可以为空";
+        if (StringUtils.isBlank(loginname)) {
+            errMsg = "登录名不可以为空";
         } else if (StringUtils.isBlank(password)) {
             errMsg = "密码不可以为空";
         } else if (sysUser == null) {
             errMsg = "查询不到指定的用户";
-        } else if (sysUser.getPassword().equals(MD5Util.encrypt(password))) {
+        } else if (!sysUser.getPassword().equals(MD5Util.encrypt(password))) {
             errMsg = "用户名或密码错误";
         } else if (sysUser.getStatus() != 1) {
             errMsg = "用户被冻结，请联系管理员";
@@ -58,7 +60,7 @@ public class UserController {
             // 登录成功
             sysUser.setPassword(""); // 隐藏密码
             request.getSession().setAttribute("user", sysUser);
-            return JsonData.success(sysUser, "登陆成功");
+            return jsonData;
             // 页面重定向
 //            if (StringUtils.isNotBlank(ret)) {
 //                response.sendRedirect(ret);

@@ -57,7 +57,7 @@ public class SysLogService implements ISysLogService {
     public void saveDeptLog(SysDept before, SysDept after) {
         SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
         sysLogWithBLOBs.setType(LogType.TYPE_DEPT);
-        sysLogWithBLOBs.setTargetId(after == null ? before.getId() : after.getId());
+        sysLogWithBLOBs.setTargetId(after == null ? before.getDeptId() : after.getDeptId());
         sysLogWithBLOBs.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLogWithBLOBs.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLogWithBLOBs.setStatus(1);
@@ -72,7 +72,7 @@ public class SysLogService implements ISysLogService {
     public void saveUserLog(SysUser before, SysUser after) {
         SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
         sysLogWithBLOBs.setType(LogType.TYPE_USER);
-        sysLogWithBLOBs.setTargetId(after == null ? before.getId() : after.getId());
+        sysLogWithBLOBs.setTargetId(after == null ? before.getUserId() : after.getUserId());
         sysLogWithBLOBs.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLogWithBLOBs.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLogWithBLOBs.setStatus(1);
@@ -87,7 +87,7 @@ public class SysLogService implements ISysLogService {
     public void saveAclModuleLog(SysAclModule before, SysAclModule after) {
         SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
         sysLogWithBLOBs.setType(LogType.TYPE_ACL_MODULE);
-        sysLogWithBLOBs.setTargetId(after == null ? before.getId() : after.getId());
+        sysLogWithBLOBs.setTargetId(after == null ? before.getAclModuleId() : after.getAclModuleId());
         sysLogWithBLOBs.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLogWithBLOBs.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLogWithBLOBs.setStatus(1);
@@ -102,7 +102,7 @@ public class SysLogService implements ISysLogService {
     public void saveAclLog(SysAcl before, SysAcl after) {
         SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
         sysLogWithBLOBs.setType(LogType.TYPE_ACL);
-        sysLogWithBLOBs.setTargetId(after == null ? before.getId() : after.getId());
+        sysLogWithBLOBs.setTargetId(after == null ? before.getAclId() : after.getAclId());
         sysLogWithBLOBs.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLogWithBLOBs.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLogWithBLOBs.setStatus(1);
@@ -117,7 +117,7 @@ public class SysLogService implements ISysLogService {
     public void saveRoleLog(SysRole before, SysRole after) {
         SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
         sysLogWithBLOBs.setType(LogType.TYPE_ROLE);
-        sysLogWithBLOBs.setTargetId(after == null ? before.getId() : after.getId());
+        sysLogWithBLOBs.setTargetId(after == null ? before.getRoleId() : after.getRoleId());
         sysLogWithBLOBs.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLogWithBLOBs.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLogWithBLOBs.setStatus(1);

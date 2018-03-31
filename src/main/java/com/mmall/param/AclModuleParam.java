@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class AclModuleParam {
 
-    private Integer id;
+    private Integer aclModuleId;
 
     @NotBlank(message = "权限模块名称不可以为空")
     @Length(min = 2, max = 20, message = "权限名称长度需要在2到20个字之间")

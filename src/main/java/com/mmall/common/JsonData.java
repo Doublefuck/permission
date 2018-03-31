@@ -1,9 +1,11 @@
 package com.mmall.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +14,9 @@ import java.util.Map;
  */
 @Setter
 @Getter
-public class JsonData<T> {
+// 当Json序列化返回数据中的key对应的值为null时，该key将不显示在数据中
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+public class JsonData<T> implements Serializable {
 
     private boolean ret;
 
@@ -55,8 +59,12 @@ public class JsonData<T> {
         return result;
     }
 
+    /**
+     * 序列化的时候忽略该值在页面中显示
+     * @return
+     */
     @JsonIgnore
     public boolean isSuccess() {
-        return this.ret = true;
+        return this.ret == true;
     }
 }

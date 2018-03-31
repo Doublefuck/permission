@@ -3,7 +3,7 @@
 <mapper namespace="com.mmall.dao.SysDeptMapper" >
   <resultMap id="BaseResultMap" type="com.mmall.module.SysDept" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <idArg column="dept_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="parent_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="level" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -15,33 +15,33 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, parent_id, level, seq, remark, operator, operator_time, operator_ip
+    dept_id, name, parent_id, level, seq, remark, operator, operator_time, operator_ip
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from sys_dept
-    where id = #{id,jdbcType=INTEGER}
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_dept
-    where id = #{id,jdbcType=INTEGER}
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mmall.module.SysDept" >
-    insert into sys_dept (id, name, parent_id, 
+    insert into sys_dept (dept_id, name, parent_id, 
       level, seq, remark, 
       operator, operator_time, operator_ip
       )
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
+    values (#{deptId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
       #{level,jdbcType=VARCHAR}, #{seq,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
       #{operator,jdbcType=VARCHAR}, #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.mmall.module.SysDept" keyProperty="id" useGeneratedKeys="true">
+  <insert id="insertSelective" parameterType="com.mmall.module.SysDept" >
     insert into sys_dept
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="deptId != null" >
+        dept_id,
       </if>
       <if test="name != null" >
         name,
@@ -69,8 +69,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="deptId != null" >
+        #{deptId,jdbcType=INTEGER},
       </if>
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
@@ -126,7 +126,7 @@
         operator_ip = #{operatorIp,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.module.SysDept" >
     update sys_dept
@@ -138,39 +138,47 @@
       operator = #{operator,jdbcType=VARCHAR},
       operator_time = #{operatorTime,jdbcType=TIMESTAMP},
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where dept_id = #{deptId,jdbcType=INTEGER}
   </update>
+
+  <select id="countDept" resultType="int">
+    select count(1) FROM sys_dept
+  </select>
 
   <select id="getAllDept" resultMap="BaseResultMap">
-    select
+    SELECT
     <include refid="Base_Column_List" />
-    from sys_dept
+    FROM sys_dept
   </select>
 
-  <select id="getChildDeptListByLevel" parameterType="string" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sys_dept
-    where level like #{level} || '.%'
-  </select>
-  
-  <update id="batchUpdateLevel" parameterType="map">
-    <foreach collection="sysDeptList" item="sysDept" separator=";">
-      update sys_dept
-      set level = #{sysDept.level}
-    </foreach>
-  </update>
-
-  <select id="countByNameAndParentId" parameterType="map" resultType="integer">
-    select count(1) from sys_dept
-    where parent_id = #{parentId}
-    and name = #{name}
+  <select id="countByNameAndParentId" parameterType="map" resultType="int">
+    SELECT count(1)
+    FROM sys_dept
+    WHERE name = #{name}
+    <if test="parentId != null">
+      AND parent_id = #{parentId}
+    </if>
     <if test="id != null">
-      and id != #{id}
+      AND dept_id != #{id}
     </if>
   </select>
 
-  <select id="countByParentId" parameterType="int" resultType="int">
-    SELECT COUNT (1) FROM sys_dept WHERE parent_id = #{deptId}
+  <select id="getChildDeptListByLevel" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_dept
+    WHERE level like #{level} || '.%'
+  </select>
+
+  <update id="batchUpdateLevel" parameterType="list">
+    <foreach collection="sysDeptList" item="sysDept" separator=";">
+      UPDATE sys_dept
+      SET level = #{dept.level}
+      WHERE dept_id = #{dept.deptId}
+    </foreach>
+  </update>
+
+  <select id="countByParentId" parameterType="integer" resultType="int">
+    SELECT count(1) from sys_dept WHERE parent_id = #{parentId}
   </select>
 </mapper>

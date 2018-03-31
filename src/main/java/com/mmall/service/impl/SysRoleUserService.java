@@ -11,7 +11,6 @@ import com.mmall.dao.SysUserMapper;
 import com.mmall.module.SysLogWithBLOBs;
 import com.mmall.module.SysRoleUser;
 import com.mmall.module.SysUser;
-import com.mmall.service.ISysLogService;
 import com.mmall.service.ISysRoleUserService;
 import com.mmall.util.IpUtil;
 import com.mmall.util.JsonMapper;
@@ -90,18 +89,20 @@ public class SysRoleUserService implements ISysRoleUserService {
      */
     @Transactional
     private void updateRoleUsers(Integer roleId, List<Integer> userIds ) {
-        sysRoleUserMapper.deleteByRoleId(roleId);
+        // 首先移除roleId对应的用户数据
+        sysRoleUserMapper.deleteUserByRoleId(roleId);
         if (CollectionUtils.isEmpty(userIds)) {
             return;
         }
-        List<SysRoleUser> sysRoleUserList = Lists.newArrayList();
 
+        List<SysRoleUser> sysRoleUserList = Lists.newArrayList();
         for (Integer userId : userIds) {
             SysRoleUser sysRoleUser = SysRoleUser.builder().roleId(roleId).userId(userId).
                     operator(RequestHolder.getCurrentUser().getUsername()).operatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest())).
                     operatorTime(new Date()).build();
             sysRoleUserList.add(sysRoleUser);
         }
+        // 批量插入新的用户角色数据
         sysRoleUserMapper.batchInsert(sysRoleUserList);
     }
 

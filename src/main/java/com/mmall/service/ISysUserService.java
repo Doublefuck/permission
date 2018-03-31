@@ -39,7 +39,7 @@ public interface ISysUserService {
      * @param keyword
      * @return
      */
-    SysUser findByKeyword(String keyword);
+    JsonData findByKeyword(String keyword);
 
     /**
      * 获取所有用户信息列表

@@ -59,20 +59,39 @@ public class SysDeptService implements ISysDeptService {
     }
 
     /**
+     * 获取某一部门详情
+     * @param deptId
+     * @return
+     */
+    @Override
+    public JsonData detail(int deptId) {
+        SysDept sysDept = sysDeptMapper.selectByPrimaryKey(deptId);
+        return JsonData.success(sysDept);
+    }
+
+    /**
      * 新增部门
      * @param deptParam
      */
     @Override
     public JsonData save(DeptParam deptParam) {
         BeanValidator.check(deptParam); // 参数校验
-        if (!checkParentDept(deptParam.getParentId())) {
-            return JsonData.fail("新部门指定的上级部门不存在");
+        if (deptParam.getParentId() != 0) {
+            if (!checkParentDept(deptParam.getParentId())) {
+                return JsonData.fail("新部门指定的上级部门不存在");
+            }
         }
-        if (checkExist(deptParam.getParentId(), deptParam.getName(), deptParam.getId())) {
+        if (checkExist(deptParam.getParentId(), deptParam.getName(), deptParam.getDeptId())) {
             throw new ParamException("同一层级下存在相同名称的部门");
         }
         // 组装部门类
-        SysDept sysDept = SysDept.builder().name(deptParam.getName()).parentId(deptParam.getParentId()).
+        int count = sysDeptMapper.countDept();
+        if (count == 0) {
+            count = 100; // 默认从100开始
+        } else {
+            count += 1;
+        }
+        SysDept sysDept = SysDept.builder().deptId(count).name(deptParam.getName()).parentId(deptParam.getParentId()).
                 seq(deptParam.getSeq()).remark(deptParam.getRemark()).build();
         // 组装部门层级
         String calculateLevel = LevelUtil.calculateLevel(getLevel(deptParam.getParentId()), deptParam.getParentId());
@@ -84,7 +103,9 @@ public class SysDeptService implements ISysDeptService {
 
         // 更新到数据库
         sysDeptMapper.insertSelective(sysDept);
+        // 更新部门操作日志信息
         iSysLogService.saveDeptLog(null, sysDept);
+
         return JsonData.success(sysDept);
     }
 
@@ -93,24 +114,25 @@ public class SysDeptService implements ISysDeptService {
      * @param deptParam
      */
     @Override
-    public void update(DeptParam deptParam) {
+    public JsonData update(DeptParam deptParam) {
         BeanValidator.check(deptParam); // 参数校验
-        if (checkExist(deptParam.getParentId(), deptParam.getName(), deptParam.getId())) {
+        if (checkExist(deptParam.getParentId(), deptParam.getName(), deptParam.getDeptId())) {
             throw new ParamException("同一层级下存在相同名称的部门");
         }
         // 更新前的部门
-        SysDept before = sysDeptMapper.selectByPrimaryKey(deptParam.getId());
+        SysDept before = sysDeptMapper.selectByPrimaryKey(deptParam.getDeptId());
         Preconditions.checkNotNull(before, "待更新的部门不存在");
-        SysDept after = SysDept.builder().id(deptParam.getId()).name(deptParam.getName()).parentId(deptParam.getParentId()).
+        SysDept after = SysDept.builder().deptId(deptParam.getDeptId()).name(deptParam.getName()).parentId(deptParam.getParentId()).
                 seq(deptParam.getSeq()).remark(deptParam.getRemark()).build();
         after.setLevel(LevelUtil.calculateLevel(getLevel(deptParam.getParentId()), deptParam.getParentId()));
         after.setRemark(deptParam.getRemark());
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
         after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
-        after.setOperatorTime(new Date()); // TODO
+        after.setOperatorTime(new Date());
 
         updateWihChild(before, after);
         iSysLogService.saveDeptLog(before, after);
+        return JsonData.success();
     }
 
     /**
@@ -169,4 +191,5 @@ public class SysDeptService implements ISysDeptService {
         }
         return sysDept.getLevel();
     }
+
 }

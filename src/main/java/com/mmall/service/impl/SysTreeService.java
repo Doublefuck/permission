@@ -73,6 +73,7 @@ public class SysTreeService implements ISysTreeService {
             DeptLevelDto deptLevelDto = DeptLevelDto.adapt(sysDept);
             deptLevelDtoList.add(deptLevelDto);
         }
+        //return deptLevelDtoList;
         return deptListToTree(deptLevelDtoList);
     }
 
@@ -110,7 +111,7 @@ public class SysTreeService implements ISysTreeService {
         Iterator iterator = userSysAclList.iterator();
         while (iterator.hasNext()) {
             SysAcl sysAcl = (SysAcl) iterator.next();
-            Integer sysAclId = sysAcl.getId();
+            Integer sysAclId = sysAcl.getAclId();
             userSysAclIdSet.add(sysAclId);
         }
         // 某一角色已分配的权限点id集合列表
@@ -118,7 +119,7 @@ public class SysTreeService implements ISysTreeService {
         iterator = roleSysAclList.iterator();
         while (iterator.hasNext()) {
             SysAcl sysAcl = (SysAcl) iterator.next();
-            Integer sysAclId = sysAcl.getId();
+            Integer sysAclId = sysAcl.getAclId();
             roleSysAclIdSet.add(sysAclId);
         }
         // 当前系统的所有权限点
@@ -131,11 +132,11 @@ public class SysTreeService implements ISysTreeService {
         for (SysAcl sysAcl : allAclList) {
             SysAclDto sysAclDto = SysAclDto.adapt(sysAcl);
             // 如果当前用户的权限点id包括并集中的权限点id
-            if (userSysAclIdSet.contains(sysAcl.getId())) {
+            if (userSysAclIdSet.contains(sysAcl.getAclId())) {
                 sysAclDto.setHasAcl(true); // 权限点可操作
             }
             // 如果并集中的权限点id在角色的权限点中存在
-            if (roleSysAclIdSet.contains(sysAcl.getId())) {
+            if (roleSysAclIdSet.contains(sysAcl.getAclId())) {
                 sysAclDto.setChecked(true); // 权限点默认被选中
             }
             sysAclDtoList.add(sysAclDto);
@@ -178,7 +179,7 @@ public class SysTreeService implements ISysTreeService {
         }
         for (SysAclModuleLevelDto sysAclModuleLevelDto : aclModuleLevelDtoList) {
             // 根据模块id获取权限点列表
-            List<SysAclDto> sysAclDtoList = (List<SysAclDto>) moduleIdAclMap.get(sysAclModuleLevelDto.getId());
+            List<SysAclDto> sysAclDtoList = (List<SysAclDto>) moduleIdAclMap.get(sysAclModuleLevelDto.getAclModuleId());
             if (CollectionUtils.isNotEmpty(sysAclDtoList)) {
                 // 排序
                 Collections.sort(sysAclDtoList, new Comparator<SysAclDto>() {
@@ -226,7 +227,7 @@ public class SysTreeService implements ISysTreeService {
             // 遍历该层的每个元素
             SysAclModuleLevelDto sysAclModuleLevelDto = sysAclModuleLevelDtoList.get(i);
             // 处理当前层级的数据
-            String nextLevel = LevelUtil.calculateLevel(level, sysAclModuleLevelDto.getId());
+            String nextLevel = LevelUtil.calculateLevel(level, sysAclModuleLevelDto.getAclModuleId());
             // 处理下一层
             List<SysAclModuleLevelDto> tempAclModuleList =(List<SysAclModuleLevelDto>) levelDtoMultimap.get(nextLevel);
 
@@ -249,7 +250,7 @@ public class SysTreeService implements ISysTreeService {
     /**
      * 递归
      * 获取deptLevelDtoList中的deptLevelDtoList
-     * 处理第一层级部门
+     * 处理第一层级部门，即根部门
      * @param deptLevelDtoList
      * @return
      */
@@ -257,12 +258,14 @@ public class SysTreeService implements ISysTreeService {
         if (CollectionUtils.isEmpty(deptLevelDtoList)) {
             return Lists.newArrayList(); // 返回空集合
         }
-        // 以level为key，以相同level的部门作为value
+        // 以level（部门层级）为key，以相同level的部门作为value
+        // 当前部门层级下可能存在多个部门
         // level-->[dept1,dept2,dept3,...]，类似于Map<level, List<Dept>>
         Multimap<String, DeptLevelDto> levelDtoMultimap = ArrayListMultimap.create();
         // 一级部门
         List<DeptLevelDto> rootList = Lists.newArrayList();
         for (DeptLevelDto deptLevelDto : deptLevelDtoList) {
+            // 将部门信息和对应的部门层级放入到multimap中，可能存在一个层级对应多个部门信息
             levelDtoMultimap.put(deptLevelDto.getLevel(), deptLevelDto);
             // 判断当前部门是否是最顶级部门
             if (LevelUtil.ROOT.equals(deptLevelDto.getLevel())) {
@@ -277,6 +280,7 @@ public class SysTreeService implements ISysTreeService {
                 return o1.getSeq() - o2.getSeq();
             }
         });
+        // 开始递归
         transformDeptTree(rootList, LevelUtil.ROOT, levelDtoMultimap);
         return rootList;
     }
@@ -294,9 +298,9 @@ public class SysTreeService implements ISysTreeService {
         for (int i = 0 ;i < deptLevelDtoList.size() ; i++) {
             // 遍历该层的每个元素
             DeptLevelDto deptLevelDto = deptLevelDtoList.get(i);
-            // 处理当前层级的数据
-            String nextLevel = LevelUtil.calculateLevel(level, deptLevelDto.getId());
-            // 处理下一层
+            // 处理当前层级的数据，组装成下一层级的level
+            String nextLevel = LevelUtil.calculateLevel(level, deptLevelDto.getDeptId());
+            // 根据nextlevel处理下一层
             List<DeptLevelDto> tempDeptList =(List<DeptLevelDto>) levelDtoMultimap.get(nextLevel);
 
             if (CollectionUtils.isNotEmpty(tempDeptList)) {

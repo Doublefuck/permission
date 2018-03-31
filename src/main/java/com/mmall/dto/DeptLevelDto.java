@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * 部门层级树
+ * 构建部门数据传输对象，继承自SysDept，同时集成自身的List数据包装
  * Created by Administrator on 2018/3/22 0022.
  */
 @Setter

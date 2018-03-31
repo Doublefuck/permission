@@ -18,7 +18,7 @@ public interface ISysDeptService {
      * 更新部门
      * @param deptParam
      */
-    void update(DeptParam deptParam);
+    JsonData update(DeptParam deptParam);
 
     /**
      * 删除部门
@@ -26,5 +26,12 @@ public interface ISysDeptService {
      * @return
      */
     JsonData delete(int deptId);
+
+    /**
+     * 获取某一部门详情
+     * @param deptId
+     * @return
+     */
+    JsonData detail(int deptId);
 
 }

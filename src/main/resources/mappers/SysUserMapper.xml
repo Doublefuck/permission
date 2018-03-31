@@ -3,7 +3,7 @@
 <mapper namespace="com.mmall.dao.SysUserMapper" >
   <resultMap id="BaseResultMap" type="com.mmall.module.SysUser" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <idArg column="user_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="username" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="telephone" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="email" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -17,25 +17,25 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, username, telephone, email, password, dept_id, status, remark, operator, operator_time, 
-    operator_ip
+    user_id, username, telephone, email, password, dept_id, status, remark, operator, 
+    operator_time, operator_ip
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from sys_user
-    where id = #{id,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_user
-    where id = #{id,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.mmall.module.SysUser" >
-    insert into sys_user (id, username, telephone, 
+    insert into sys_user (user_id, username, telephone, 
       email, password, dept_id, 
       status, remark, operator, 
       operator_time, operator_ip)
-    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, 
+    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, 
       #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{deptId,jdbcType=INTEGER}, 
       #{status,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, 
       #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR})
@@ -43,8 +43,8 @@
   <insert id="insertSelective" parameterType="com.mmall.module.SysUser" >
     insert into sys_user
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
+      <if test="userId != null" >
+        user_id,
       </if>
       <if test="username != null" >
         username,
@@ -78,8 +78,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
       </if>
       <if test="username != null" >
         #{username,jdbcType=VARCHAR},
@@ -147,7 +147,7 @@
         operator_ip = #{operatorIp,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.module.SysUser" >
     update sys_user
@@ -161,51 +161,23 @@
       operator = #{operator,jdbcType=VARCHAR},
       operator_time = #{operatorTime,jdbcType=TIMESTAMP},
       operator_ip = #{operatorIp,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </update>
 
-  <select id="findByUsernameAndPassword" parameterType="map" resultType="com.mmall.module.SysUser">
-    select
-    <include refid="Base_Column_List" />
-    from sys_user
-    where username = #{username}
-    and password = #{password}
+  <select id="countByDeptId" parameterType="integer" resultType="int">
+    SELECT count(1) from sys_user where dept_id = #{deptId}
   </select>
-  
+
   <select id="findByKeyword" parameterType="string" resultMap="BaseResultMap">
-    select
+    SELECT
     <include refid="Base_Column_List" />
-    from sys_user
-    where telephone = #{keyword}
-    or email = #{keyword}
+    FROM sys_user
+    WHERE email = #{keyword}
+    OR telephone = #{keyword}
   </select>
 
-  <select id="countByEmail" parameterType="map" resultType="int">
-    select count(1)
-    from sys_use
-    where email = #{email}
-    <if test="userId != null">
-      and id != #{userId}
-    </if>
-  </select>
-
-  <select id="countByTelephone" parameterType="map" resultType="int">
-    select count(1)
-    from sys_use
-    where telephone = #{telephone}
-    <if test="userId != null">
-      and id != #{userId}
-    </if>
-  </select>
-
-  <select id="getByUserIdList" parameterType="list" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from sys_role_user
-    where id IN 
-      <foreach collection="userIds" item="id" open="(" close=")" separator=",">
-        #{id}
-      </foreach>
+  <select id="countUser" resultType="int">
+    SELECT count(1) FROM sys_user
   </select>
 
   <select id="getAll" resultMap="BaseResultMap">
@@ -214,7 +186,25 @@
     FROM sys_user
   </select>
 
-  <select id="countByDeptId" parameterType="int" resultType="int">
-    select count(1) from sys_user where dept_id = #{deptId}
+  <select id="countByUsername" parameterType="map" resultType="int">
+    SELECT count(1) FROM sys_user WHERE username = #{username} and user_id != {userId}
+  </select>
+
+  <select id="countByEmail" parameterType="map" resultType="int">
+    SELECT count(1) FROM sys_user WHERE email = #{email} AND user_id != {userId}
+  </select>
+
+  <select id="countByTelephone" parameterType="map" resultType="int">
+    SELECT count(1) FROM sys_user WHERE telephone = #{phone} AND user_id != #{userId}
+  </select>
+
+  <select id="getByUserIdList" parameterType="list" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM sys_user
+    WHERE user_id IN
+    <foreach collection="userIdList" index="index" item="userId" open="(" close=")" separator=",">
+      #{userId}
+    </foreach>
   </select>
 </mapper>

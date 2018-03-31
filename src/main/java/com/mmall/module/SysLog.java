@@ -1,9 +1,14 @@
 package com.mmall.module;
 
+import lombok.Builder;
+import lombok.ToString;
+
 import java.util.Date;
 
+@Builder
+@ToString
 public class SysLog {
-    private Integer id;
+    private Integer logId;
 
     private Integer type;
 
@@ -17,8 +22,8 @@ public class SysLog {
 
     private Integer status;
 
-    public SysLog(Integer id, Integer type, Integer targetId, String operator, Date operatorTime, String operatorIp, Integer status) {
-        this.id = id;
+    public SysLog(Integer logId, Integer type, Integer targetId, String operator, Date operatorTime, String operatorIp, Integer status) {
+        this.logId = logId;
         this.type = type;
         this.targetId = targetId;
         this.operator = operator;
@@ -31,12 +36,12 @@ public class SysLog {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getLogId() {
+        return logId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setLogId(Integer logId) {
+        this.logId = logId;
     }
 
     public Integer getType() {

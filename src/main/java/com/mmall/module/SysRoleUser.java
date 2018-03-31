@@ -8,7 +8,7 @@ import java.util.Date;
 @Builder
 @ToString
 public class SysRoleUser {
-    private Integer id;
+    private Integer roleUserId;
 
     private Integer roleId;
 
@@ -20,8 +20,8 @@ public class SysRoleUser {
 
     private String operatorIp;
 
-    public SysRoleUser(Integer id, Integer roleId, Integer userId, String operator, Date operatorTime, String operatorIp) {
-        this.id = id;
+    public SysRoleUser(Integer roleUserId, Integer roleId, Integer userId, String operator, Date operatorTime, String operatorIp) {
+        this.roleUserId = roleUserId;
         this.roleId = roleId;
         this.userId = userId;
         this.operator = operator;
@@ -33,12 +33,12 @@ public class SysRoleUser {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getRoleUserId() {
+        return roleUserId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setRoleUserId(Integer roleUserId) {
+        this.roleUserId = roleUserId;
     }
 
     public Integer getRoleId() {

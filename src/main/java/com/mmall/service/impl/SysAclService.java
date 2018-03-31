@@ -39,10 +39,11 @@ public class SysAclService implements ISysAclService {
     @Override
     public JsonData save(AclParam aclParam) {
         BeanValidator.check(aclParam);
-        if (checkExists(aclParam.getAclModuleId(), aclParam.getName(), aclParam.getId())) {
+        if (checkExists(aclParam.getAclModuleId(), aclParam.getName(), aclParam.getAclId())) {
             throw new ParamException("当前权限模块下面存在相同名称的权限点");
         }
-        SysAcl sysAcl = SysAcl.builder().name(aclParam.getName()).aclModuleId(aclParam.getAclModuleId()).url(aclParam.getUrl()).
+        int count = sysAclMapper.countAcl() + 10;
+        SysAcl sysAcl = SysAcl.builder().aclId(count).name(aclParam.getName()).aclModuleId(aclParam.getAclModuleId()).url(aclParam.getUrl()).
                 type(aclParam.getType()).status(aclParam.getStatus()).seq(aclParam.getSeq()).remark(aclParam.getRemark()).build();
         sysAcl.setCode(generateCode());
         sysAcl.setOperator(RequestHolder.getCurrentUser().getUsername());
@@ -50,7 +51,7 @@ public class SysAclService implements ISysAclService {
         sysAcl.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
 
         sysAclMapper.insertSelective(sysAcl);
-        iSysLogService.saveAcllog(null, sysAcl);
+        iSysLogService.saveAclLog(null, sysAcl);
         return JsonData.success(sysAcl);
     }
 
@@ -62,23 +63,23 @@ public class SysAclService implements ISysAclService {
     @Override
     public JsonData update(AclParam aclParam) {
         BeanValidator.check(aclParam);
-        if (checkExists(aclParam.getAclModuleId(), aclParam.getName(), aclParam.getId())) {
+        if (checkExists(aclParam.getAclModuleId(), aclParam.getName(), aclParam.getAclId())) {
             throw new ParamException("当前权限模块下面存在相同名称的权限点");
         }
-        SysAcl before = sysAclMapper.selectByPrimaryKey(aclParam.getId());
+        SysAcl before = sysAclMapper.selectByPrimaryKey(aclParam.getAclId());
 //        if (before == null) {
 //            throw new PermissionException("待更新的权限点不存在");
 //        }
         Preconditions.checkNotNull(before, "待更新的权限点不存在");
 
-        SysAcl after = SysAcl.builder().id(aclParam.getId()).name(aclParam.getName()).aclModuleId(aclParam.getAclModuleId()).url(aclParam.getUrl()).
+        SysAcl after = SysAcl.builder().aclId(aclParam.getAclId()).name(aclParam.getName()).aclModuleId(aclParam.getAclModuleId()).url(aclParam.getUrl()).
                 type(aclParam.getType()).status(aclParam.getStatus()).seq(aclParam.getSeq()).remark(aclParam.getRemark()).build();
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
         after.setOperatorTime(new Date());
         after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
 
         sysAclMapper.updateByPrimaryKeySelective(after);
-        iSysLogService.saveAcllog(before, after);
+        iSysLogService.saveAclLog(before, after);
         return JsonData.success(after);
     }
 
@@ -91,7 +92,7 @@ public class SysAclService implements ISysAclService {
     @Override
     public JsonData list(Integer aclModuleId) {
         if (aclModuleId == null) {
-            return JsonData.fail("参数不能为空");
+            return JsonData.fail("参数为空");
         }
         // 根据权限模块id查询权限点的数量
         int count = sysAclMapper.countByAclModuleId(aclModuleId);

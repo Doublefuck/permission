@@ -1,21 +1,18 @@
 package com.mmall.module;
 
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@Builder
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class SysLogWithBLOBs extends SysLog {
     private String oldValue;
 
     private String newValue;
-
-    public SysLogWithBLOBs(Integer id, Integer type, Integer targetId, String operator, Date operatorTime, String operatorIp, Integer status, String oldValue, String newValue) {
-        super(id, type, targetId, operator, operatorTime, operatorIp, status);
-        this.oldValue = oldValue;
-        this.newValue = newValue;
-    }
-
-    public SysLogWithBLOBs() {
-        super();
-    }
 
     public String getOldValue() {
         return oldValue;
