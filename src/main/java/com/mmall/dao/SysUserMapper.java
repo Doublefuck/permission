@@ -33,7 +33,7 @@ public interface SysUserMapper {
      * @param keyword
      * @return
      */
-    SysUser findByKeyword(@Param("keyword") String keyword);
+    SysUser loginByKeyword(@Param("keyword") String keyword);
 
     /**
      * 获取当前所有状态的用户总数量
@@ -76,5 +76,19 @@ public interface SysUserMapper {
      * @return
      */
     List<SysUser> getByUserIdList(@Param("userIdList") List<Integer> userIdList);
+
+    /**
+     * 根据关键字查询
+     * @param keyword
+     * @return
+     */
+    int findByKeyword(@Param("keyword") String keyword);
+
+    /**
+     * 查询用户所属的部门是否存在
+     * @param deptId
+     * @return
+     */
+    int checkDeptExist(@Param("deptId") Integer deptId);
 
 }

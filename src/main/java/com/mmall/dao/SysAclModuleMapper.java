@@ -31,7 +31,7 @@ public interface SysAclModuleMapper {
      * @param level
      * @return
      */
-    List<SysAclModule> getChildSysAclModuleListByLevel(@Param("level") String level);
+    List<SysAclModule> getChildSysAclModuleListByLevel(@Param("level") String level, @Param("aclModuleId") Integer aclModuleId);
 
     /**
      * 批量更新权限模块层级

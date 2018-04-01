@@ -191,7 +191,7 @@
     SELECT count(1) FROM sys_acl
     WHERE acl_module_id = #{aclModuleId}
     AND name = #{aclName}
-    <if test="acl_id != null">
+    <if test="aclId != null">
       AND acl_id != #{aclId}
     </if>
   </select>

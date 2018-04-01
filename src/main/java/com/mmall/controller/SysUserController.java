@@ -42,10 +42,6 @@ public class SysUserController {
     @RequestMapping("/save.json")
     @ResponseBody
     public JsonData saveUser(HttpSession session, UserParam userParam) {
-        SysUser sysUser = (SysUser) session.getAttribute("user");
-        if (sysUser == null) {
-            return JsonData.fail("用户未登录，请先登录xxx");
-        }
         iSysUserService.save(userParam);
         return JsonData.success();
     }
@@ -74,7 +70,7 @@ public class SysUserController {
     }
 
     /**
-     * 获取单一用户权限信息
+     * 获取单一用户权限、角色信息
      * @param userId
      * @return
      */

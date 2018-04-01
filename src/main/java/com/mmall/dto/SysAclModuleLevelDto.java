@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import java.util.List;
 
 /**
+ * 权限模块dto对象，同时包含权限点集合数据
  * Created by Administrator on 2018/3/24 0024.
  */
 @Setter

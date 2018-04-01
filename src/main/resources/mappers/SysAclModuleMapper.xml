@@ -157,11 +157,12 @@
     SELECT count(1) FROM sys_acl_module
   </select>
 
-  <select id="getChildSysAclModuleListByLevel" parameterType="string" resultMap="BaseResultMap">
+  <select id="getChildSysAclModuleListByLevel" parameterType="map" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
     FROM sys_acl_module
-    WHERE level like #{level} || '.%'
+    WHERE level like #{level}
+    AND parent_id = #{aclModuleId}
   </select>
 
   <update id="batchUpdateLevel" parameterType="list">

@@ -54,7 +54,7 @@ public class SysAclModuleService implements ISysAclModuleService {
             throw new ParamException("当前权限模块下存在权限点，无法删除");
         }
         sysAclModuleMapper.deleteByPrimaryKey(aclModuleId);
-        return null;
+        return JsonData.success("删除权限模块成功");
     }
 
     /**
@@ -70,6 +70,7 @@ public class SysAclModuleService implements ISysAclModuleService {
         int count = sysAclModuleMapper.countAclModule() + 100;
         SysAclModule sysAclModule = SysAclModule.builder().aclModuleId(count).name(aclModuleParam.getName()).parentId(aclModuleParam.getParentId()).
                 seq(aclModuleParam.getSeq()).status(aclModuleParam.getStatus()).remark(aclModuleParam.getRemark()).build();
+        sysAclModule.setLevel(LevelUtil.calculateLevel(getLevel(aclModuleParam.getParentId()), aclModuleParam.getParentId()));
         sysAclModule.setOperator(RequestHolder.getCurrentUser().getUsername());
         sysAclModule.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysAclModule.setOperatorTime(new Date());
@@ -106,7 +107,7 @@ public class SysAclModuleService implements ISysAclModuleService {
     }
 
     /**
-     * 更新当前权限模块及其子权限模块
+     * 更新当前权限模块及其子权限模块的level
      * @param before
      * @param after
      */
@@ -118,10 +119,11 @@ public class SysAclModuleService implements ISysAclModuleService {
         if (!newLevelPrefix.equals(oldLevelPrefix)) {
             // 处理子部门
             // 获取当前权限模块的所有子权限模块
-            List<SysAclModule> sysAclModuleList = sysAclModuleMapper.getChildSysAclModuleListByLevel(before.getLevel());
+            String level = before.getLevel() + ".%";
+            List<SysAclModule> sysAclModuleList = sysAclModuleMapper.getChildSysAclModuleListByLevel(level,before.getAclModuleId());
             if (CollectionUtils.isNotEmpty(sysAclModuleList)) {
                 for (SysAclModule sysAclModule : sysAclModuleList) {
-                    String level = sysAclModule.getLevel();
+                    level = sysAclModule.getLevel();
                     // 以旧的权限模块等级前缀开始,更新所有子权限模块层级
                     if (level.indexOf(oldLevelPrefix) == 0) {
                         level = newLevelPrefix + level.substring(oldLevelPrefix.length());

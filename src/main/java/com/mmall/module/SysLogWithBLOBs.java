@@ -29,4 +29,10 @@ public class SysLogWithBLOBs extends SysLog {
     public void setNewValue(String newValue) {
         this.newValue = newValue == null ? null : newValue.trim();
     }
+
+    public static void main(String[] args) {
+        SysLogWithBLOBs sysLogWithBLOBs = new SysLogWithBLOBs();
+        sysLogWithBLOBs.setStatus(1);
+        System.out.println(sysLogWithBLOBs.getStatus());
+    }
 }

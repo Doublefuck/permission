@@ -30,11 +30,11 @@ public class AclModuleParam {
     private String level;
 
     @NotNull(message = "权限模块展示顺序不能为空")
-    @Max(value = 1, message = "权限模块状态不合法")
-    @Min(value = 0, message = "权限模块状态不合法")
     private Integer seq;
 
     @NotNull(message = "权限模块状态不可以为空")
+    @Max(value = 1, message = "权限模块状态不合法")
+    @Min(value = 0, message = "权限模块状态不合法")
     private Integer status;
 
     @Length(max = 200, message = "权限模块备注长度在200个字以内")

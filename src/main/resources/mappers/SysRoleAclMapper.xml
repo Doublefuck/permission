@@ -127,10 +127,10 @@
   </delete>
 
   <insert id="batchInsert" parameterType="list">
-    INSERT INTO sys_role_acl (role_id, acl_id, operator, operate_time, operate_ip)
+    INSERT INTO sys_role_acl (role_id, acl_id, operator, operator_time, operator_ip)
     VALUES
       <foreach collection="sysRoleAclList" item="roleAcl" separator=",">
-        (#{roleAcl.roleId}, #{roleAcl.aclId}, #{roleAcl.operator}, #{roleAcl.operateTime}, #{roleAcl.operateIp})
+        (#{roleAcl.roleId}, #{roleAcl.aclId}, #{roleAcl.operator}, #{roleAcl.operatorTime}, #{roleAcl.operatorIp})
       </foreach>
   </insert>
 </mapper>

@@ -15,6 +15,13 @@ import java.util.List;
 public interface ISysUserService {
 
     /**
+     * 用户注册
+     * @param sysUser
+     * @return
+     */
+    JsonData register(SysUser sysUser);
+
+    /**
      * 新增用户
      * @param userParam
      */
@@ -26,20 +33,12 @@ public interface ISysUserService {
      */
     void update(UserParam userParam);
 
-    /**2
-     * 用户登录校验
-     * @param username
-     * @param password
-     * @return
-     */
-    JsonData findByParam(String username, String password);
-
     /**
-     * 根据关键字查询信息，可以是用户名、手机号、邮箱等
+     * 用户登录校验
      * @param keyword
      * @return
      */
-    JsonData findByKeyword(String keyword);
+    JsonData loginByKeyword(String keyword);
 
     /**
      * 获取所有用户信息列表

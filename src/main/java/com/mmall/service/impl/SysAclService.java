@@ -63,14 +63,15 @@ public class SysAclService implements ISysAclService {
     @Override
     public JsonData update(AclParam aclParam) {
         BeanValidator.check(aclParam);
+        SysAcl before = sysAclMapper.selectByPrimaryKey(aclParam.getAclId());
+        Preconditions.checkNotNull(before, "待更新的权限点不存在");
         if (checkExists(aclParam.getAclModuleId(), aclParam.getName(), aclParam.getAclId())) {
             throw new ParamException("当前权限模块下面存在相同名称的权限点");
         }
-        SysAcl before = sysAclMapper.selectByPrimaryKey(aclParam.getAclId());
 //        if (before == null) {
 //            throw new PermissionException("待更新的权限点不存在");
 //        }
-        Preconditions.checkNotNull(before, "待更新的权限点不存在");
+
 
         SysAcl after = SysAcl.builder().aclId(aclParam.getAclId()).name(aclParam.getName()).aclModuleId(aclParam.getAclModuleId()).url(aclParam.getUrl()).
                 type(aclParam.getType()).status(aclParam.getStatus()).seq(aclParam.getSeq()).remark(aclParam.getRemark()).build();

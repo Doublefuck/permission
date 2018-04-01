@@ -168,7 +168,7 @@
     SELECT count(1) from sys_user where dept_id = #{deptId}
   </select>
 
-  <select id="findByKeyword" parameterType="string" resultMap="BaseResultMap">
+  <select id="loginByKeyword" parameterType="string" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
     FROM sys_user
@@ -206,5 +206,14 @@
     <foreach collection="userIdList" index="index" item="userId" open="(" close=")" separator=",">
       #{userId}
     </foreach>
+  </select>
+
+  <select id="findByKeyword" parameterType="string" resultType="int">
+    SELECT count(1) FROM sys_user
+    WHERE username = #{keyword} OR email = #{keyword} OR telephone = #{keyword}
+  </select>
+
+  <select id="checkDeptExist" parameterType="integer" resultType="int">
+    SELECT count(1) FROM sys_user WHERE dept_id = #{deptId}
   </select>
 </mapper>

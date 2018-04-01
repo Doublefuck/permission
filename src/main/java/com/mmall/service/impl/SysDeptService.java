@@ -85,12 +85,7 @@ public class SysDeptService implements ISysDeptService {
             throw new ParamException("同一层级下存在相同名称的部门");
         }
         // 组装部门类
-        int count = sysDeptMapper.countDept();
-        if (count == 0) {
-            count = 100; // 默认从100开始
-        } else {
-            count += 1;
-        }
+        int count = sysDeptMapper.countDept() + 100000;
         SysDept sysDept = SysDept.builder().deptId(count).name(deptParam.getName()).parentId(deptParam.getParentId()).
                 seq(deptParam.getSeq()).remark(deptParam.getRemark()).build();
         // 组装部门层级
@@ -111,6 +106,7 @@ public class SysDeptService implements ISysDeptService {
 
     /**
      * 更新部门
+     * 如果部门level发生变化，则一起更新当前部门的所有子部门的level
      * @param deptParam
      */
     @Override
@@ -136,7 +132,7 @@ public class SysDeptService implements ISysDeptService {
     }
 
     /**
-     * 更新当前部门及其子部门
+     * 更新当前部门及其子部门的level
      * 原子性
      * @param before
      * @param after

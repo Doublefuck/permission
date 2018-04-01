@@ -41,7 +41,7 @@ public class UserController {
         String loginname = request.getParameter("loginname");
         String password = request.getParameter("password");
 
-        JsonData jsonData = iSysUserSevice.findByKeyword(loginname);
+        JsonData jsonData = iSysUserSevice.loginByKeyword(loginname);
         SysUser sysUser = (SysUser) jsonData.getData();
         String errMsg = ""; // 错误提示信息
         String ret = request.getParameter("ret"); // 从别的页面跳转到登录页面携带的地址
@@ -92,5 +92,15 @@ public class UserController {
         return JsonData.success("退出登录状态成功");
     }
 
+    /**
+     * 用户注册
+     * @param sysUser
+     * @return
+     */
+    @RequestMapping("/register.json")
+    @ResponseBody
+    public JsonData register(SysUser sysUser) {
+        return null;
+    }
 
 }

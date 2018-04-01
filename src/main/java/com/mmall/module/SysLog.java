@@ -5,7 +5,6 @@ import lombok.ToString;
 
 import java.util.Date;
 
-@Builder
 @ToString
 public class SysLog {
     private Integer logId;

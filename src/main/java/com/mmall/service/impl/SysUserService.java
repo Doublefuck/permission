@@ -13,8 +13,8 @@ import com.mmall.util.BeanValidator;
 import com.mmall.util.IpUtil;
 import com.mmall.util.MD5Util;
 import com.mmall.util.PasswordUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -41,8 +41,8 @@ public class SysUserService implements ISysUserService {
      * @param password
      * @return
      */
-    @Override
-    public JsonData findByParam(String username, String password) {
+//    @Override
+//    public JsonData findByParam(String username, String password) {
 //        if (StringUtils.isBlank(username)) {
 //            return JsonData.fail("用户名不能为空");
 //        } else if (StringUtils.isBlank(password)) {
@@ -51,6 +51,16 @@ public class SysUserService implements ISysUserService {
 //        SysUser sysUser = sysUserMapper.findByUsernameAndPassword(username, password);
 //
 //        return JsonData.success(sysUser);
+//        return null;
+//    }
+
+    /**
+     * 用户注册
+     * @param sysUser
+     * @return
+     */
+    @Override
+    public JsonData register(SysUser sysUser) {
         return null;
     }
 
@@ -59,17 +69,21 @@ public class SysUserService implements ISysUserService {
      * @param userParam
      */
     @Override
+    @Transactional
     public void save(UserParam userParam) {
         BeanValidator.check(userParam);
-        if (checkUsernameExist(userParam.getUsername(),userParam.getUserId())) {
+        if (checkExist(userParam.getUsername())) {
             throw new ParamException("用户名已存在");
         }
-        boolean flag = checkTelephoneExist(userParam.getTelephone(), userParam.getUserId());
+        boolean flag = checkExist(userParam.getTelephone());
         if (flag) {
             throw new ParamException("电话已被占用");
         }
-        if (checkEmailExist(userParam.getEmail(), userParam.getUserId())) {
+        if (checkExist(userParam.getEmail())) {
             throw new ParamException("邮箱已被占用");
+        }
+        if (!checkDeptExist(userParam.getDeptId())) {
+            throw new ParamException("部门不存在");
         }
         // 自定义密码
         String password = PasswordUtil.randomPassword();
@@ -78,18 +92,19 @@ public class SysUserService implements ISysUserService {
         String encryptPassword = MD5Util.encrypt(password);
         int count = sysUserMapper.countUser();
         if (count > 0) {
-            count += 1;
+            count += 100000;
         }
         SysUser sysUser = SysUser.builder().userId(count).username(userParam.getUsername()).telephone(userParam.getTelephone()).
             email(userParam.getEmail()).password(encryptPassword).deptId(userParam.getDeptId()).status(userParam.getStatus()).
             remark(userParam.getRemark()).build();
-        sysUser.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysUser.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+//        sysUser.setOperator(RequestHolder.getCurrentUser().getUsername());
+//        sysUser.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysUser.setOperatorTime(new Date());
 
         // TODO 发送email，通知用户密码信息
 
         sysUserMapper.insertSelective(sysUser);
+//        int a = 9/0;
         iSysLogService.saveUserLog(null, sysUser);
     }
 
@@ -98,21 +113,25 @@ public class SysUserService implements ISysUserService {
      * @param userParam
      */
     @Override
+    @Transactional
     public void update(UserParam userParam) {
         BeanValidator.check(userParam);
-        if (checkUsernameExist(userParam.getUsername(), userParam.getUserId())) {
+        if (checkExist(userParam.getUsername())) {
             throw new ParamException("当前用户名已存在，请更换用户名");
         }
         if (!checkReg(userParam.getTelephone(), 1)) {
             throw new ParamException("电话格式错误");
         }
-        if (checkTelephoneExist(userParam.getTelephone(), userParam.getUserId())) {
+        if (checkExist(userParam.getTelephone())) {
             throw new ParamException("电话已被占用");
+        }
+        if (!checkDeptExist(userParam.getDeptId())) {
+            throw new ParamException("待更新用户所在的部门不存在");
         }
 //        if (checkReg(userParam.getEmail(), 2)) {
 //            throw new ParamException("邮箱格式错误");
 //        }
-        if (checkEmailExist(userParam.getEmail(), userParam.getUserId())) {
+        if (checkExist(userParam.getEmail())) {
             throw new ParamException("邮箱已被占用");
         }
         SysUser before = sysUserMapper.selectByPrimaryKey(userParam.getUserId());
@@ -124,17 +143,18 @@ public class SysUserService implements ISysUserService {
         after.setOperatorIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperatorTime(new Date());
         sysUserMapper.updateByPrimaryKeySelective(after);
+        //int a = 9/0;
         iSysLogService.saveUserLog(before, after);
     }
 
     /**
-     * 根据关键字查询信息，可以是用户名、手机号、邮箱等
+     * 查询登录用户信息
      * @param keyword
      * @return
      */
     @Override
-    public JsonData<SysUser> findByKeyword(String keyword) {
-        SysUser sysUser = sysUserMapper.findByKeyword(keyword);
+    public JsonData<SysUser> loginByKeyword(String keyword) {
+        SysUser sysUser = sysUserMapper.loginByKeyword(keyword);
         return JsonData.success(sysUser);
     }
 
@@ -149,32 +169,21 @@ public class SysUserService implements ISysUserService {
     }
 
     /**
-     * 检测用户名是否已存在
-     * @param username
+     * 根据关键字检测用户名、邮箱或者手机是否已存在
+     * @param keyword
      * @return
      */
-    public boolean checkUsernameExist(String username,  Integer userId) {
-        return sysUserMapper.countByUsername(username, userId) > 0;
+    public boolean checkExist(String keyword) {
+        return sysUserMapper.findByKeyword(keyword) > 0;
     }
 
     /**
-     * 校验用户邮箱是否存在
-     * @param email
-     * @param userId
+     * 查询用户所属的部门是否存在
+     * @param deptId
      * @return
      */
-    public boolean checkEmailExist(String email, Integer userId) {
-        return sysUserMapper.countByEmail(email, userId) > 0;
-    }
-
-    /**
-     * 校验用户注册手机是否存在
-     * @param phone
-     * @param userId
-     * @return
-     */
-    public boolean checkTelephoneExist(String phone, Integer userId) {
-        return sysUserMapper.countByTelephone(phone, userId) > 0;
+    public boolean checkDeptExist(Integer deptId) {
+        return sysUserMapper.checkDeptExist(deptId) > 0;
     }
 
     /**

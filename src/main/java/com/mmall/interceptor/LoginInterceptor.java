@@ -100,14 +100,21 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             out.flush(); // 将out流数据清空
             out.close(); // 关闭out流
             return false;
+        } else if (sysUser.getStatus() != 1) { // 状态被冻结
+            out.print(JsonMapper.obj2String(JsonData.fail("用户已被冻结，请联系管理员")));
+            out.flush(); // 将out流数据清空
+            out.close(); // 关闭out流
+            return false;
+        } else if (sysUser.getUsername().equals("admin")) {
+            // 将用户信息放入到ThreadLocal中
+            RequestHolder.add(sysUser);
+            // 将请求信息放入到ThreadLocal中
+            RequestHolder.add(request);
+            return true;
         }
 //        out.flush();
 //        out.close();
-        // 将用户信息放入到ThreadLocal中
-        RequestHolder.add(sysUser);
-        // 将请求信息放入到ThreadLocal中
-        RequestHolder.add(request);
-        return true;
+        return false;
     }
 
     @Override

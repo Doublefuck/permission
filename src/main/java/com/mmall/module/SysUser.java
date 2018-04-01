@@ -1,6 +1,7 @@
 package com.mmall.module;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
@@ -132,5 +133,20 @@ public class SysUser {
 
     public void setOperatorIp(String operatorIp) {
         this.operatorIp = operatorIp == null ? null : operatorIp.trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SysUser)) return false;
+
+        SysUser sysUser = (SysUser) o;
+
+        return getUserId().equals(sysUser.getUserId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getUserId().hashCode();
     }
 }

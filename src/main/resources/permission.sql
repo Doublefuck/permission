@@ -10,6 +10,8 @@ create table sys_dept(
 	operator_ip varchar(20) not null default '' comment '最后一次更新操作者的IP'
 ) comment='部门表';
 
+INSERT INTO sys_dept VALUES (null, '行政部', 0, '0', 1, '行政部是第一层级部门', 'admin', now(), '192.168.1.18');
+SELECT * FROM sys_dept;
 ALTER TABLE sys_dept MODIFY dept_id int(3) AUTO_INCREMENT;
 ALTER TABLE sys_dept AUTO_INCREMENT = 100;
 
@@ -18,7 +20,7 @@ INSERT INTO sys_dept VALUES (null, 'zs', 0, 0, 1, 'xxx', 'zs', now(), now());
 DELETE FROM sys_dept WHERE dept_id IN (100,101);
 
 ALTER TABLE sys_dept AUTO_INCREMENT = 100000;
-DELETE FROM sys_user WHERE user_id = 100000;
+DELETE FROM sys_user;
 
 create table sys_user(
 	user_id int not null primary key comment '用户id，主键自增，以100000起始',
@@ -33,13 +35,19 @@ create table sys_user(
 	operator_time datetime default NOW() comment '最后一次操作时间',
 	operator_ip varchar(20) not null default '' comment '最后一次更新操作者的IP'
 ) comment='用户表';
-
+show engines;
+show create table sys_user;
+show variables like '%storage_engine%';
 insert INTO sys_user VALUES (null, 'zs', '11111', '1','1',1,1,'11111','xxx', now(), '111');
 SELECT * FROM sys_user;
+ALTER TABLE sys_user AUTO_INCREMENT = 100000;
+DELETE FROM sys_user WHERE user_id = 100002;
 
 ALTER TABLE sys_acl_module MODIFY acl_module_id int(3) AUTO_INCREMENT;
 ALTER TABLE sys_acl_module AUTO_INCREMENT = 100;
-
+select * from sys_acl_module;
+DELETE FROM sys_acl_module;
+SELECT * FROM sys_acl_module WHERE level LIKE '0.%' AND parent_id = 101;
 create table sys_acl_module(
 	acl_module_id int not null primary key comment '权限模块id，自增，100起始',
 	name varchar(20) not null default '' comment '权限模块名称',
@@ -55,7 +63,8 @@ create table sys_acl_module(
 
 ALTER TABLE sys_acl MODIFY acl_id int AUTO_INCREMENT;
 ALTER TABLE sys_acl AUTO_INCREMENT = 10;
-
+DELETE FROM sys_acl;
+SELECT * FROM sys_acl_module;
 create table sys_acl(
 	acl_id int not null primary key comment '权限id，自增，10开始',
 	code varchar(20) not null default '' comment '权限码',
@@ -73,7 +82,8 @@ create table sys_acl(
 
 ALTER TABLE sys_role MODIFY role_id int AUTO_INCREMENT;
 ALTER TABLE sys_role AUTO_INCREMENT = 1;
-
+select * FROM  sys_role;
+DELETE FROM sys_role;
 create table sys_role(
 	role_id int not null primary key comment '角色id',
 	name varchar(20) not null comment '角色名称',
@@ -85,6 +95,7 @@ create table sys_role(
 	operator_ip varchar(20) not null default '' comment '最后一次操作者的IP'
 )comment='角色表';
 select * from sys_role;
+select * from sys_acl;
 ALTER TABLE sys_role_user MODIFY role_user_id int AUTO_INCREMENT;
 ALTER TABLE sys_role_user AUTO_INCREMENT = 1;
 
@@ -130,7 +141,12 @@ DELETE FROM sys_dept;
 SELECT count(1) from sys_user where telephone = '1111111111';
 INSERT INTO sys_user VALUES (null, '张三', '13555796632', '10001@qq.com', '12345678', 1, 1 ,'张三备注1', 'admin', now(), now());
 select * FROM sys_log;
+SELECT * FROM sys_user;
+SELECT * FROM sys_acl;
 select * from sys_acl_module;
+select * from sys_role_acl;
+select * from sys_role_user where role_id = 1;
+
 
 /*
 	每个表都有自己的主键

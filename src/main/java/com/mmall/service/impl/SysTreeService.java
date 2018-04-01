@@ -151,7 +151,7 @@ public class SysTreeService implements ISysTreeService {
      * @return
      */
     public List<SysAclModuleLevelDto> aclListToTree(List<SysAclDto> sysAclDtoList) {
-        if (CollectionUtils.isNotEmpty(sysAclDtoList)) {
+        if (CollectionUtils.isEmpty(sysAclDtoList)) {
             return Lists.newArrayList();
         }
         // 获取系统权限模块树
@@ -195,6 +195,11 @@ public class SysTreeService implements ISysTreeService {
         }
     }
 
+    /**
+     * 组装第一层级权限模块
+     * @param sysAclModuleLevelDtoList
+     * @return
+     */
     public List<SysAclModuleLevelDto> aclModuleListToTree(List<SysAclModuleLevelDto> sysAclModuleLevelDtoList) {
         if (CollectionUtils.isEmpty(sysAclModuleLevelDtoList)) {
             return Lists.newArrayList(); // 返回空集合
@@ -222,6 +227,12 @@ public class SysTreeService implements ISysTreeService {
         return rootList;
     }
 
+    /**
+     * 以第一层级权限模块数据起始，进行逐层递归获取权限模块
+     * @param sysAclModuleLevelDtoList
+     * @param level
+     * @param levelDtoMultimap
+     */
     public void transformAclModuleTree(List<SysAclModuleLevelDto> sysAclModuleLevelDtoList, String level, Multimap levelDtoMultimap) {
         for (int i = 0 ;i < sysAclModuleLevelDtoList.size() ; i++) {
             // 遍历该层的每个元素

@@ -83,15 +83,15 @@ public class SysRoleController {
     }
 
     /**
-     * 更新角色对应的权限点
+     * 更新/添加角色对应的权限点
      * @param roleId
-     * @param sclIds
+     * @param aclIds
      * @return
      */
     @RequestMapping("changeAcls.json")
     @ResponseBody
-    public JsonData changeAcls(@RequestParam("roleId") Integer roleId, @RequestParam("aclIds") String sclIds) {
-        List<Integer> aclIdList = StringUtil.splitToListInt(sclIds);
+    public JsonData changeAcls(@RequestParam("roleId") Integer roleId, @RequestParam("aclIds") String aclIds) {
+        List<Integer> aclIdList = StringUtil.splitToListInt(aclIds);
         iSysRoleAclService.changeRoleAcls(roleId, aclIdList);
         return JsonData.success(roleTree(roleId));
     }
